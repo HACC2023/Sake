@@ -2,6 +2,8 @@ import { Container, Navbar, Nav } from "react-bootstrap";
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 
+import "./Header.css"
+
 const Header = () => {
   return (
     <header>
@@ -9,7 +11,7 @@ const Header = () => {
         <Container>
           <LinkContainer to="/">
             <Navbar.Brand
-              className="text-uppercase fw-bold text-success fs-3"
+              className="text-uppercase fw-bold fs-3"
             >
               Zero Waste Campaign
             </Navbar.Brand>
