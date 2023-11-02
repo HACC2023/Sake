@@ -1,5 +1,7 @@
 import express from "express";
+
 const router = express.Router();
+
 import {
   authUser,
   registerUser,
@@ -8,9 +10,9 @@ import {
   updateUserProfile,
 } from "../controllers/userController.js";
 
-router.post("/", registerUser);
-router.post("/auth", authUser);
-router.post("/logout", logoutUser);
-router.route("/profile").get(getUserProfile).put(updateUserProfile);
+router.post("/register-user", registerUser);
+router.post("/auth-user", authUser);
+router.post("/logout-user", logoutUser);
+router.route("/profile-user").get(getUserProfile).put(updateUserProfile);
 
 export default router;

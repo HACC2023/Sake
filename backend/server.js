@@ -4,13 +4,15 @@ dotenv.config();
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 const port = process.env.PORT || 6000;
+import adminRoutes from "./routes/adminRoutes.js";
+import vendorRoutes from "./routes/vendorRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 
 connectDB();
 
 const app = express();
 
-app.use("/api/users", userRoutes);
+app.use("/api/users", userRoutes, vendorRoutes, adminRoutes);
 
 app.get("/", (req, res) => res.send("Server is ready"));
 
