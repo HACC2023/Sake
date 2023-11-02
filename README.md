@@ -12,4 +12,4 @@ npm i
 3. Start the live server
 ```bash
 npm run dev
-```bash
+```
