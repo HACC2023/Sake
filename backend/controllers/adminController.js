@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Admin from "../models/adminModel.js";
 import Vendor from "../models/vendorModel.js";
+import Container from "../models/containerSchema.js";
 import generateToken from "../utils/generateToken.js";
 
 // @desc Auth user/set token
@@ -93,4 +94,66 @@ const logoutAdmin = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Admin Logged Out" });
 });
 
-export { authAdmin, registerAdmin, registerVendor, logoutAdmin };
+// @desc get list of vendors
+// route GET /api/users/admin/vendors
+// @access Private
+const getAllVendors = asyncHandler(async (req, res) => {
+  const vendors = await Vendor.find().select("-password");
+  res.status(200).json(vendors);
+});
+
+// @desc get vendor by name
+// route GET /api/users/admin/vendors/:name (The-Red-Fish)
+// @access Private
+const getVendorByName = asyncHandler(async (req, res) => {
+  const vendorName = req.params.name.replace(/-/g, " ");
+  const vendor = await Vendor.findOne({
+    name: new RegExp(`^${vendorName}$`, "i"),
+  })
+    .select("-password")
+    .populate({ path: "containerOwner", select: "-password" });
+  if (!vendor) {
+    return res.status(404).json({ message: "Vendor not found" });
+  }
+  res.status(200).json(vendor);
+});
+
+// @desc dispatch containers to specific vendor
+// route PATCH /api/users/admin/vendors/:name
+// @access Private
+const updateVendor = asyncHandler(async (req, res) => {
+  const vendorName = req.params.name.replace(/-/g, " ");
+  const { containerName, quantity } = req.body;
+  const container = await Container.findOne({
+    category: containerName,
+  });
+  const vendor = await Vendor.findOne({
+    name: new RegExp(`^${vendorName}$`, "i"),
+  })
+    .select("-password")
+    .populate({ path: "containerReceived.containerSchema" });
+  if (vendor) {
+    const containerToUpdate = vendor.containerReceived.find(
+      container => container.containerSchema.category === containerName
+    );
+    if (containerToUpdate) {
+      containerToUpdate.quantity += +quantity;
+    } else {
+      vendor.containerReceived.push({ containerSchema: container, quantity });
+    }
+    const updatedVendor = await vendor.save();
+    res.status(200).json(updatedVendor);
+  } else {
+    res.status(404).json({ message: "Vendor not found" });
+  }
+});
+
+export {
+  authAdmin,
+  registerAdmin,
+  registerVendor,
+  logoutAdmin,
+  getAllVendors,
+  getVendorByName,
+  updateVendor,
+};
