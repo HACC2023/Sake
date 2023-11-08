@@ -7,3 +7,10 @@
     height: 100vh;
     width: 100%;
 }
+/* Outlines the words with black (for better visibility over the images */
+h3 {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  }
+  p {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+  }
