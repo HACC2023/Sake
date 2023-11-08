@@ -36,7 +36,11 @@ const User = () => {
           <Modal.Title>Checkout Container</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Generated Code: <strong>{Math.random().toString(36).substr(2, 5)}</strong></p>
+
+
+          <p>Generated Code: <strong>{Math.random().toString(36).substr(2, 5)}</strong></p> {/* eventually this will be a variable tha the vendor can interact with */}
+          <p>Please don't close this window until you are done checking out.</p>
+
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseGenerateCodeModal}>
@@ -51,9 +55,13 @@ const User = () => {
           <Modal.Title>Pay Balance</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Add content for paying balance */}
+
+
+
           <p>Current Balance: ${currentBalance}</p>
-          {/* Add payment form or method */}
+
+
+          
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClosePayBalanceModal}>
