@@ -1,17 +1,96 @@
 import asyncHandler from "express-async-handler";
+import Admin from "../models/adminModel.js";
+import Vendor from "../models/vendorModel.js";
+import generateToken from "../utils/generateToken.js";
 
 // @desc Auth user/set token
 // route POST /api/users/auth-admin
 // @access Public
 const authAdmin = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Auth Admin" });
+  const { email, password } = req.body;
+
+  const admin = await Admin.findOne({ email });
+
+  if (admin && (await admin.matchPasswords(password))) {
+    generateToken(res, admin._id, "admin");
+    res
+      .status(201)
+      .json({ _id: admin._id, name: admin.name, email: admin.email });
+  } else {
+    res.status(401);
+    throw new Error("Invalid email or password");
+  }
+});
+
+// @desc Register a new user
+// route POST /api/users/register-user
+// @access Public
+const registerAdmin = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  const adminExists = await Admin.findOne({ email });
+
+  if (adminExists) {
+    res.status(400);
+    throw new Error("Admin already exists");
+  }
+
+  const admin = await Admin.create({ name, email, password });
+
+  if (admin) {
+    res
+      .status(201)
+      .json({ _id: admin._id, name: admin.name, email: admin.email });
+  } else {
+    res.status(400);
+    throw new Error("Invalid admin data");
+  }
+  res.status(200).json({ message: "Register Admin" });
+});
+
+// @desc Register a new vendor
+// route POST /api/users/register-vendor
+// @access Public
+const registerVendor = asyncHandler(async (req, res) => {
+  const { name, email, phone, password } = req.body;
+
+  const vendorExists = await Vendor.findOne({ email });
+
+  if (vendorExists) {
+    res.status(400);
+    throw new Error("Vendor already exists");
+  }
+
+  const vendor = await Vendor.create({
+    containerOwner: req.admin._id,
+    name,
+    email,
+    phone,
+    password,
+  });
+
+  if (vendor) {
+    res.status(201).json({
+      _id: vendor._id,
+      name: vendor.name,
+      email: vendor.email,
+      phone: vendor.phone,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid vendor data");
+  }
 });
 
 // @desc Logout an admin
 // route POST /api/users/logout
 // @access Public
 const logoutAdmin = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Logout Admin" });
+  res.cookie("admin", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Admin Logged Out" });
 });
 
-export { authAdmin, logoutAdmin };
+export { authAdmin, registerAdmin, registerVendor, logoutAdmin };

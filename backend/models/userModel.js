@@ -1,73 +1,52 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const ObjectID = mongoose.Schema.Types.ObjectId;
-
-const adminSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    username: { type: String, required: true, unique },
-    password: { type: String, required: true },
-  },
-  { timestamps: true }
-);
-
-const vendorSchema = new mongoose.Schema(
-  {
-    containerOwner: { type: ObjectID, required: true, ref: "Admin" },
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique },
-    phone: { type: String, required: true, unique },
-    password: { type: String, required: true },
-    containerReceived: [
-      { containerSchema, quantity: { type: Number, required: true } },
-    ],
-    location: [{ type: String, required: true }],
-  },
-  { timestamps: true }
-);
 
 const userSchema = new mongoose.Schema(
   {
     containerVendor: { type: ObjectID, required: true, ref: "Vendor" },
     name: { type: String, required: true },
-    phone: { type: String, required: true, unique },
+    phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     payment: {
-      card_number: { type: String, required: true },
-      cvv: { type: String, required: true },
+      card_number: { type: String },
+      cvv: { type: String },
       expiry_month: {
         type: String,
-        required: true,
         validate: { validator: v => v.length === 2 },
       },
       expiry_year: {
         type: String,
-        required: true,
         validate: { validator: v => v.length === 2 },
       },
-      amount: { type: Number, required: true },
+      amount: { type: Number },
     },
-    locationReturn: { type: String, required: true },
+    locationReturn: { type: String },
     container: [
       {
-        containerInfo: containerSchema,
-        checkoutQuant: { type: Number, required: true },
-        returnQuan: { type: Number, required: true, default: 0 },
+        containerInfo: { type: ObjectID, ref: "Container" },
+        checkoutQuant: { type: Number, default: 0 },
+        returnQuan: { type: Number, default: 0 },
       },
     ],
-    returnPeriod: { type: Number, required: true },
+    returnPeriod: { type: Number },
   },
   { timestamps: true }
 );
 
-const containerSchema = new mongoose.Schema({
-  category: { type: String, required: true },
-  price: { type: Number, required: true },
-  cost: { type: Number, required: true },
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-const Admin = mongoose.model("Admin", adminSchema);
-const Vendor = mongoose.model("Vendor", vendorSchema);
+userSchema.methods.matchPasswords = async function (enteredPwd) {
+  return await bcrypt.compare(enteredPwd, this.password);
+};
+
 const User = mongoose.model("User", userSchema);
 
-export { Admin, Vendor, User };
+export default User;
