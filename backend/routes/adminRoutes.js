@@ -10,6 +10,7 @@ import {
   getAllVendors,
   getVendorByName,
   updateVendor,
+  removeVendor,
 } from "../controllers/adminController.js";
 
 router.post("/register-admin", registerAdmin);
@@ -21,5 +22,6 @@ router
   .route("/admin/vendors/:name")
   .get(protectAdmin, getVendorByName)
   .patch(protectAdmin, updateVendor);
+router.patch("/admin/remove/vendors/:name", protectAdmin, removeVendor);
 
 export default router;

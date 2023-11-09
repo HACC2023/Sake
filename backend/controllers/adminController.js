@@ -148,6 +148,45 @@ const updateVendor = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc remove containers from specific vendor
+// route PATCH /api/users/admin/remove/vendors/:name
+// @access Private
+const removeVendor = asyncHandler(async (req, res) => {
+  const vendorName = req.params.name.replace(/-/g, " ");
+  const { containerName, quantity } = req.body;
+  const vendor = await Vendor.findOne({
+    name: new RegExp(`^${vendorName}$`, "i"),
+  })
+    .select("-password")
+    .populate({ path: "containerReceived.containerSchema" });
+  if (vendor) {
+    const containerToUpdate = vendor.containerReceived.find(
+      container => container.containerSchema.category === containerName
+    );
+    if (!containerToUpdate) {
+      return res.status(404).json({
+        message: "Container not found",
+      });
+    }
+    if (containerToUpdate.quantity < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Quantity to remove exceeds the available quantity" });
+    }
+    if (containerToUpdate.quantity === +quantity) {
+      vendor.containerReceived = vendor.containerReceived.filter(
+        container => container.containerSchema.category !== containerName
+      );
+    } else {
+      containerToUpdate.quantity -= +quantity;
+    }
+    const updatedVendor = await vendor.save();
+    res.status(200).json(updatedVendor);
+  } else {
+    res.status(404).json({ message: "Vendor not found" });
+  }
+});
+
 export {
   authAdmin,
   registerAdmin,
@@ -156,4 +195,5 @@ export {
   getAllVendors,
   getVendorByName,
   updateVendor,
+  removeVendor,
 };
