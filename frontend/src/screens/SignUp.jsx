@@ -1,48 +1,75 @@
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import FormContainer from "../components/FormContainer";
 
-function SignUp() {
-  const [isVendor, setIsVendor] = useState(true);
+const SignUp = () => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const toggleSignUpMode = () => {
-    setIsVendor(!isVendor);
+  const submitHandler = async e => {
+    e.preventDefault();
+    console.log("submit");
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <FormContainer>
       <h1>Sign Up</h1>
-      <div>
-        <Button onClick={toggleSignUpMode} variant="outline-primary">
-          {isVendor ? 'Switch to Customer' : 'Switch to Vendor'}
-        </Button>
-      </div>
-      <h3>{isVendor ? 'Vendor Sign Up' : 'Customer Sign Up'}</h3>
-      <Form style={{ width: '300px', margin: 'auto' }}>
-        <Form.Group className="mb-3" controlId="formGroupEmail">
-          <Form.Label>{isVendor ? 'Enter your email address' : 'Enter your phone number'}</Form.Label>
-          <Form.Control type={isVendor ? 'email' : 'tel'} placeholder={isVendor ? 'Enter email' : 'Enter phone number'} />
-          <Form.Text className="text-muted">
-            {isVendor ? 'We\'ll never share your email with anyone else.' : 'We\'ll never share your phone number with anyone else.'}
-          </Form.Text>
+      <Form onSubmit={submitHandler}>
+        <Form.Group className="my-2" controlId="name">
+          <Form.Label>Your Name</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Your Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          ></Form.Control>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formGroupPassword">
-          <Form.Label>Enter a Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
-          <Form.Text className="text-muted">
-            Passwords must be 6+ characters in length and include a capital letter.
-          </Form.Text>
+
+        <Form.Group className="my-2" controlId="phone">
+          <Form.Label>Your Phone Number</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter Your Phone Number"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+          ></Form.Control>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formGroupPasswordConfirmation">
+
+        <Form.Group className="my-2" controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        <Form.Group className="my-2" controlId="confirmPassword">
           <Form.Label>Confirm Password</Form.Label>
-          <Form.Control type="password" placeholder="Please Type the Password you entered previously." />
+          <Form.Control
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+          ></Form.Control>
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Sign Up
+
+        <Button type="submit" variant="primary" className="mt-3">
+          Register
         </Button>
+
+        <Row className="py-3">
+          <Col>
+            Already have an account? <Link to="/signin">Sign In</Link>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </FormContainer>
   );
-}
+};
 
 export default SignUp;

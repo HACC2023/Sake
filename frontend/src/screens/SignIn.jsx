@@ -1,38 +1,53 @@
-import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Form, Button, Row, Col } from "react-bootstrap";
+import FormContainer from "../components/FormContainer";
 
-function SignIn() {
-  const [isVendor, setIsVendor] = useState(true);
+const SignIn = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const toggleSignInMode = () => { {/*separated by whether they are a vendor or not*/}
-    setIsVendor(!isVendor);
+  const submitHandler = async e => {
+    e.preventDefault();
+    console.log("submit");
   };
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <FormContainer>
       <h1>Sign In</h1>
-      <div>
-        <Button onClick={toggleSignInMode} variant="outline-primary">
-          {isVendor ? 'Switch to Customer' : 'Switch to Vendor'}  
-        </Button>
-      </div>
-      <h3>{isVendor ? 'Vendor Sign In' : 'Customer Sign In'}</h3>
-      <Form style={{ width: '300px', margin: 'auto' }}>
-        <Form.Group className="mb-3" controlId="formGroupEmail">
-          <Form.Label>{isVendor ? 'Email address' : 'Phone Number'}</Form.Label>
-          <Form.Control type={isVendor ? 'email' : 'tel'} placeholder={isVendor ? 'Enter email' : 'Enter phone number'} />
+      <Form onSubmit={submitHandler}>
+        <Form.Group className="my-2" controlId="email">
+          <Form.Label>Email Address</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          ></Form.Control>
         </Form.Group>
-        <Form.Group className="mb-3" controlId="formGroupPassword">
+
+        <Form.Group className="my-2" controlId="password">
           <Form.Label>Password</Form.Label>
-          <Form.Control type="password" placeholder="Password" />
+          <Form.Control
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          ></Form.Control>
         </Form.Group>
-        <Button variant="primary" type="submit">
+
+        <Button type="submit" variant="primary" className="mt-3">
           Sign In
         </Button>
+
+        <Row className="py-3">
+          <Col>
+            New Admin? <Link to="/signup">Register</Link>
+          </Col>
+        </Row>
       </Form>
-    </div>
+    </FormContainer>
   );
-}
+};
 
 export default SignIn;
