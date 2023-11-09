@@ -26,11 +26,10 @@ const userSchema = new mongoose.Schema(
     container: [
       {
         containerInfo: { type: ObjectID, ref: "Container" },
-        checkoutQuant: { type: Number, default: 0 },
+        checkoutQuan: { type: Number, default: 0 },
         returnQuan: { type: Number, default: 0 },
       },
     ],
-    returnPeriod: { type: Number },
   },
   { timestamps: true }
 );

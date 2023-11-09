@@ -14,6 +14,7 @@ import {
 router.post("/register-user", registerUser);
 router.post("/auth-user", authUser);
 router.post("/logout-user", protectUser, logoutUser);
-router.route("/profile-user").get(getUserProfile).put(updateUserProfile);
+router.get("/user/profile", protectUser, getUserProfile);
+router.post("/user/profile/payment", protectUser, updateUserProfile);
 
 export default router;

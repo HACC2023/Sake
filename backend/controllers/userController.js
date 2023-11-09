@@ -74,17 +74,30 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // @desc Get user profile
-// route GET /api/users/profile
+// route GET /api/users/user/profile
 // @access Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "User Profile" });
+  const user = await User.findOne({ _id: req.user._id }).select("-password");
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404).json({ message: "User Not Found" });
+  }
 });
 
-// @desc Update user profile
-// route PUT /api/users/profile
+// @desc Update user payment
+// route POST /api/users/user/profile/payment
 // @access Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "Update User Profile" });
+  const user = await User.findOne({ _id: req.user._id }).select("-password");
+  const { card_number, cvv, expiry_month, expiry_year } = req.body;
+  if (user) {
+    user.payment = { card_number, cvv, expiry_month, expiry_year };
+    const updatedUser = await user.save();
+    res.status(200).json(updatedUser);
+  } else {
+    res.status(404).json({ message: "User Not Found" });
+  }
 });
 
 export {

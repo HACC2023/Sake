@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Vendor from "../models/vendorModel.js";
 import User from "../models/userModel.js";
+import Container from "../models/containerSchema.js";
 import generateToken from "../utils/generateToken.js";
 
 // @desc Auth user/set token
@@ -46,12 +47,13 @@ const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json(users);
 });
 
-// @desc get vendor by name
+// @desc get user by name
 // route GET /api/users/vendor/user/:phone
 // @access Private
 const getUserByPhone = asyncHandler(async (req, res) => {
   const user = await User.findOne({
     phone: req.params.phone,
+    containerVendor: req.vendor._id,
   })
     .select("-password -containerVendor")
     .populate({ path: "container.containerInfo" });
@@ -65,30 +67,93 @@ const getUserByPhone = asyncHandler(async (req, res) => {
 // route PATCH /api/users/vendor/checkout-user/:phone
 // @access Private
 const checkoutUser = asyncHandler(async (req, res) => {
-  const vendorName = req.params.name.replace(/-/g, " ");
   const { containerName, quantity } = req.body;
-  const container = await Container.findOne({
+  const containerInfo = await Container.findOne({
     category: containerName,
   });
-  const vendor = await Vendor.findOne({
-    name: new RegExp(`^${vendorName}$`, "i"),
+  if (!containerInfo)
+    return res.status(404).json({ message: "Container not found" });
+  const user = await User.findOne({
+    phone: req.params.phone,
+    containerVendor: req.vendor._id,
   })
     .select("-password")
-    .populate({ path: "containerReceived.containerSchema" });
-  if (vendor) {
-    const containerToUpdate = vendor.containerReceived.find(
-      container => container.containerSchema.category === containerName
+    .populate({ path: "container.containerInfo" });
+  if (user) {
+    const containerToUpdate = user.container.find(
+      container => container.containerInfo.category === containerName
     );
     if (containerToUpdate) {
-      containerToUpdate.quantity += +quantity;
+      containerToUpdate.checkoutQuan += +quantity;
     } else {
-      vendor.containerReceived.push({ containerSchema: container, quantity });
+      user.container.push({
+        containerInfo,
+        checkoutQuan: quantity,
+        returnQuan: 0,
+      });
     }
-    const updatedVendor = await vendor.save();
-    res.status(200).json(updatedVendor);
+    const updatedUser = await user.save();
+    res.status(200).json(updatedUser);
   } else {
-    res.status(404).json({ message: "Vendor not found" });
+    res.status(404).json({ message: "User not found" });
   }
 });
 
-export { authVendor, logoutVendor, getAllUsers, getUserByPhone };
+// @desc remove containers from specific user
+// route PATCH /api/users/vendor/user-return/:phone
+// @access Private
+const returnUser = asyncHandler(async (req, res) => {
+  const { containerName, quantity } = req.body;
+  const user = await User.findOne({
+    phone: req.params.phone,
+    containerVendor: req.vendor._id,
+  })
+    .select("-password")
+    .populate({ path: "container.containerInfo" });
+  if (user) {
+    const containerToUpdate = user.container.find(
+      container => container.containerInfo.category === containerName
+    );
+    if (!containerToUpdate) {
+      return res.status(404).json({
+        message: "Container not found",
+      });
+    }
+    if (containerToUpdate.quantity < quantity) {
+      return res
+        .status(400)
+        .json({ message: "Quantity to remove exceeds the available quantity" });
+    }
+
+    containerToUpdate.returnQuan += +quantity;
+
+    const updatedUser = await user.save();
+    res.status(200).json(updatedUser);
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+});
+
+// @desc update return location
+// route POST /api/users/vendor/location
+// @access Private
+const updateLocation = asyncHandler(async (req, res) => {
+  const { returnLocation } = req.body;
+  const vendor = await Vendor.findById({ _id: req.vendor._id });
+  if (!vendor) {
+    return res.status(404).json({ message: "Vendor not found" });
+  }
+  vendor.location.push(returnLocation);
+  const updatedVendor = await vendor.save();
+  res.status(200).json(updatedVendor);
+});
+
+export {
+  authVendor,
+  logoutVendor,
+  getAllUsers,
+  getUserByPhone,
+  checkoutUser,
+  returnUser,
+  updateLocation,
+};
