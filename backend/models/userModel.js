@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
         returnQuan: { type: Number, default: 0 },
       },
     ],
+    coupon: { type: String },
   },
   { timestamps: true }
 );
