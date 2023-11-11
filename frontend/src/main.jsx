@@ -15,11 +15,15 @@ import SignUp from "./screens/SignUp.jsx";
 import Admin from "./screens/Admin.jsx";
 import Vendor from "./screens/Vendor.jsx";
 import User from "./screens/User.jsx";
+import Contact from "./screens/Contact.jsx";
+import About from "./screens/About.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/admin" element={<Admin />} />

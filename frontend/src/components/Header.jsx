@@ -22,7 +22,10 @@ const Header = () => {
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+          <Navbar.Collapse
+            id="basic-navbar-nav"
+            className="justify-content-end"
+          >
             <Nav>
               <Nav.Link onClick={handleOffcanvasToggle}>
                 <span className="burger-icon">&#9776;</span>
@@ -33,7 +36,7 @@ const Header = () => {
       </Navbar>
 
       <Offcanvas
-        placement="end" 
+        placement="end"
         show={showOffcanvas}
         onHide={() => setShowOffcanvas(false)}
       >
@@ -41,6 +44,16 @@ const Header = () => {
           <Offcanvas.Title>Site Navigation</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className="offcanvas-body">
+          <LinkContainer to="/contact">
+            <Nav.Link className="offcanvas-content">
+              <FaSignOutAlt /> Contact
+            </Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/about">
+            <Nav.Link className="offcanvas-content">
+              <FaSignOutAlt /> About Us
+            </Nav.Link>
+          </LinkContainer>
           <LinkContainer to="/signin">
             <Nav.Link className="offcanvas-content">
               <FaSignInAlt /> Sign In
