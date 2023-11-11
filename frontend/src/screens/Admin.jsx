@@ -15,7 +15,6 @@ const Admin = () => {
     { id: 2, vendorName: 'The Blue Fish', phoneNumber: '987-654-3210', location: 'Right Wing', smallContainers: 3, mediumContainers: 2, largeContainers: 1 },
   ]);
 
-  // State for modals and other UI interactions
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +23,7 @@ const Admin = () => {
   const handleCloseAssignModal = () => setShowAssignModal(false);
   const handleShowRemoveModal = () => setShowRemoveModal(true);
   const handleCloseRemoveModal = () => setShowRemoveModal(false);
+  const [showCreateVendorModal, setShowCreateVendorModal] = useState(false);
   const [showRemoveVendorModal, setShowRemoveVendorModal] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState(null);
 
@@ -32,6 +32,8 @@ const Admin = () => {
     setShowRemoveVendorModal(true);
   };
   const handleCloseRemoveVendorModal = () => setShowRemoveVendorModal(false);
+  const handleShowCreateVendorModal = () => setShowCreateVendorModal(true);
+  const handleCloseCreateVendorModal = () => setShowCreateVendorModal(false);
 
 
   const handleRemoveVendor = () => {// needs function to actually remove
@@ -41,6 +43,11 @@ const Admin = () => {
     handleCloseRemoveVendorModal();
   };
 
+
+  const handleCreateVendorAccount = () => {
+    // account creation
+    handleCloseCreateVendorModal();
+  };
 
   const handleAssignContainer = () => {
 
@@ -66,6 +73,9 @@ const Admin = () => {
       <Button variant="danger" style={{ margin: '10px' }} onClick={handleShowRemoveModal}>
         Remove Container
       </Button>
+      <Button variant="success" style={{ margin: '10px' }} onClick={handleShowCreateVendorModal}>
+        Create Vendor Account
+      </Button>
 
       {/* Assign Container Modal */}
       <Modal show={showAssignModal} onHide={handleCloseAssignModal}>
@@ -77,10 +87,6 @@ const Admin = () => {
             <Form.Group controlId="vendorNameAssign">
               <Form.Label>Vendor Name:</Form.Label>
               <Form.Control type="text" placeholder="Enter vendor name" />
-            </Form.Group>
-            <Form.Group controlId="vendorLocationAssign">
-              <Form.Label>Location:</Form.Label>
-              <Form.Control type="text" placeholder="Enter vendor location" />
             </Form.Group>
             <Form.Group controlId="numContainersAssign">
               <Form.Label>Number of Containers to Assign:</Form.Label>
@@ -157,6 +163,49 @@ const Admin = () => {
           </Button>
           <Button variant="danger" onClick={handleRemoveContainer}>
             Remove
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Create Vendor Account Modal */}
+      <Modal show={showCreateVendorModal} onHide={handleCloseCreateVendorModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create Vendor Account</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="vendorNameCreate">
+              <Form.Label>Vendor Name:</Form.Label>
+              <Form.Control type="text" placeholder="Enter vendor name" />
+            </Form.Group>
+            <Form.Group controlId="vendorEmailCreate">
+              <Form.Label>Email:</Form.Label>
+              <Form.Control type="email" placeholder="Enter email" />
+            </Form.Group>
+            <Form.Group controlId="vendorPhoneCreate">
+              <Form.Label>Phone Number:</Form.Label>
+              <Form.Control type="tel" placeholder="Enter phone number" />
+            </Form.Group>
+            <Form.Group controlId="vendorPasswordCreate">
+              <Form.Label>Password:</Form.Label>
+              <Form.Control type="password" placeholder="Enter password" />
+            </Form.Group>
+            <Form.Group controlId="vendorConfirmPasswordCreate">
+              <Form.Label>Confirm Password:</Form.Label>
+              <Form.Control type="password" placeholder="Confirm password" />
+            </Form.Group>
+            <Form.Group controlId="vendorLocationCreate">
+              <Form.Label>Location:</Form.Label>
+              <Form.Control type="text" placeholder="Enter vendor location" />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseCreateVendorModal}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleCreateVendorAccount}>
+            Create Account
           </Button>
         </Modal.Footer>
       </Modal>
