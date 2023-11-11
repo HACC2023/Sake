@@ -23,21 +23,28 @@ const Vendor = () => {
   const handleCloseRemoveModal = () => setShowRemoveModal(false);
   const handleShowRemoveContainersModal = () => setShowRemoveContainersModal(true);
   const handleCloseRemoveContainersModal = () => setShowRemoveContainersModal(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showSeeContainersModal, setShowSeeContainersModal] = useState(false);
 
   const handleAssignContainer = () => {
     handleCloseAssignModal();
-    // Add logic for assigning containers
+
+
   };
 
   const handleRemoveContainer = () => {
     handleCloseRemoveModal();
-    // Add logic for removing container
+
+
   };
 
   const handleSeeContainers = (customerId) => {
-    console.log(`See Containers for customer ${customerId}`);
-    // Implement logic for "See Containers" action
+    const customer = customerData.find((c) => c.id === customerId);
+    setSelectedCustomer(customer);
+    setShowSeeContainersModal(true);
   };
+
+  const handleCloseSeeContainersModal = () => setShowSeeContainersModal(false);
 
   const handleRemoveContainers = (customerId) => {
     console.log(`Remove Containers for customer ${customerId}`);
@@ -58,6 +65,29 @@ const Vendor = () => {
       <Button variant="danger" style={{ margin: '10px' }} onClick={handleShowRemoveModal}>
         Remove Container
       </Button>
+
+    {/* See Containers Modal */}
+    <Modal show={showSeeContainersModal} onHide={handleCloseSeeContainersModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Containers Information</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedCustomer && (
+            <div>
+              <p>Customer: {selectedCustomer.name}</p>
+              <p>Small Containers: {selectedCustomer.smallContainers}</p>  {/* ideally these values are queried from our database? */}
+              <p>Medium Containers: {selectedCustomer.mediumContainers}</p>
+              <p>Large Containers: {selectedCustomer.largeContainers}</p>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseSeeContainersModal}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
 
       {/* Assign Container Modal */}
       <Modal show={showAssignModal} onHide={handleCloseAssignModal}>
