@@ -11,19 +11,36 @@ const Admin = () => {
 
 
   const [containersAssigned, setContainersAssigned] = useState([
-    { id: 1, vendorName: 'The Red Fish', location: 'Left Wing', smallContainers: 5, mediumContainers: 3, largeContainers: 2 },
-    { id: 2, vendorName: 'The Blue Fish', location: 'Right Wing', smallContainers: 3, mediumContainers: 2, largeContainers: 1 },
+    { id: 1, vendorName: 'The Red Fish', phoneNumber: '123-456-7890', location: 'Left Wing', smallContainers: 5, mediumContainers: 3, largeContainers: 2 },
+    { id: 2, vendorName: 'The Blue Fish', phoneNumber: '987-654-3210', location: 'Right Wing', smallContainers: 3, mediumContainers: 2, largeContainers: 1 },
   ]);
 
   // State for modals and other UI interactions
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleShowAssignModal = () => setShowAssignModal(true);
   const handleCloseAssignModal = () => setShowAssignModal(false);
   const handleShowRemoveModal = () => setShowRemoveModal(true);
   const handleCloseRemoveModal = () => setShowRemoveModal(false);
+  const [showRemoveVendorModal, setShowRemoveVendorModal] = useState(false);
+  const [selectedVendor, setSelectedVendor] = useState(null);
+
+  const handleShowRemoveVendorModal = (vendor) => {
+    setSelectedVendor(vendor);
+    setShowRemoveVendorModal(true);
+  };
+  const handleCloseRemoveVendorModal = () => setShowRemoveVendorModal(false);
+
+
+  const handleRemoveVendor = () => {// needs function to actually remove
+    setContainersAssigned((prevVendors) =>
+      prevVendors.filter((vendor) => vendor.id !== selectedVendor.id)
+    );
+    handleCloseRemoveVendorModal();
+  };
+
 
   const handleAssignContainer = () => {
 
@@ -34,6 +51,10 @@ const Admin = () => {
 
     handleCloseRemoveModal();
   };
+
+  const filteredVendors = containersAssigned.filter((vendor) =>
+    vendor.vendorName.includes(searchQuery) || vendor.phoneNumber.includes(searchQuery)
+  );
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -81,6 +102,26 @@ const Admin = () => {
           </Button>
           <Button variant="primary" onClick={handleAssignContainer}>
             Assign
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Remove Vendor Modal */}
+      <Modal show={showRemoveVendorModal} onHide={handleCloseRemoveVendorModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Remove Vendor</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedVendor && (
+            <p>Are you sure you want to remove {selectedVendor.vendorName}?</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseRemoveVendorModal}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleRemoveVendor}>
+            Confirm
           </Button>
         </Modal.Footer>
       </Modal>
@@ -140,10 +181,20 @@ const Admin = () => {
 
       {/* Containers Assigned to Vendors Table */}
       <p>Containers Assigned to Vendors:</p>
-      <Table striped bordered hover>
+
+{/* search bar */}
+<input
+        type="text"
+        placeholder="Name/Number"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
+<Table striped bordered hover>
         <thead>
           <tr>
             <th>Vendor Name</th>
+            <th>Phone Number</th>
             <th>Location</th>
             <th>Small Containers</th>
             <th>Medium Containers</th>
@@ -152,14 +203,19 @@ const Admin = () => {
           </tr>
         </thead>
         <tbody>
-          {containersAssigned.map((vendor) => (
+          {filteredVendors.map((vendor) => (
             <tr key={vendor.id}>
               <td>{vendor.vendorName}</td>
+              <td>{vendor.phoneNumber}</td>
               <td>{vendor.location}</td>
               <td>{vendor.smallContainers}</td>
               <td>{vendor.mediumContainers}</td>
               <td>{vendor.largeContainers}</td>
-              {/* Add buttons or actions for the admin to manage containers assigned to vendors */}
+              <td>
+                <Button variant="danger" onClick={() => handleShowRemoveVendorModal(vendor)}>
+                  Remove Vendor
+                </Button>
+              </td>
             </tr>
           ))}
         </tbody>
