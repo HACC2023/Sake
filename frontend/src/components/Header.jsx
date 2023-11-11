@@ -64,7 +64,7 @@ const Header = () => {
           >
             <Nav>
               <Nav.Link onClick={handleOffcanvasToggle}>
-                <span className="burger-icon">&#9776;</span>
+                <span className="burger-icon fs-1 lh-2">&#9776;</span>
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -100,7 +100,7 @@ const Header = () => {
               </LinkContainer>
               <LinkContainer to="/signup">
                 <Nav.Link className="offcanvas-content">
-                  <FaSignOutAlt /> Sign Up
+                  <FaSignOutAlt /> Sign Up <span className="text-muted">(User Only)</span>
                 </Nav.Link>
               </LinkContainer>
             </>
