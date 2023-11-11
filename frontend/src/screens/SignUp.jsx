@@ -19,6 +19,16 @@ function SignUp() {
       </div>
       <h3>{isVendor ? 'Vendor Sign Up' : 'Customer Sign Up'}</h3>
       <Form style={{ width: '300px', margin: 'auto' }}>
+
+      <Form.Group className="mb-3" controlId="formGroupVendor">
+          <Form.Label>Choose a Vendor</Form.Label>
+          <Form.Select aria-label="Click to Show Vendors">
+        <option value='1'>Big Fish</option>
+        <option value='2'>Big Meat</option>
+        <option value='3'>fruit</option>
+      </Form.Select>
+        </Form.Group>
+
         <Form.Group className="mb-3" controlId="formGroupEmail">
           <Form.Label>{isVendor ? 'Enter your email address' : 'Enter your phone number'}</Form.Label>
           <Form.Control type={isVendor ? 'email' : 'tel'} placeholder={isVendor ? 'Enter email' : 'Enter phone number'} />

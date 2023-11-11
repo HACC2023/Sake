@@ -4,6 +4,7 @@ import { Modal, Button } from 'react-bootstrap';
 const User = () => {
   const [containersOwned, setContainersOwned] = useState(3);
   const [currentBalance, setCurrentBalance] = useState(50);
+  const [currentReturned, setCurrentReturned] = useState(10);
   const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
   const [showPayBalanceModal, setShowPayBalanceModal] = useState(false);
 
@@ -23,6 +24,7 @@ const User = () => {
       <h1>User Portal</h1>
       <p>Containers Owned: {containersOwned}</p>
       <p>Current Balance: ${currentBalance}</p>
+      <p>Total Containers Returned: ${currentReturned}</p>
       <button style={{ marginRight: '10px' }} onClick={handleShowGenerateCodeModal}>
         Generate Code
       </button>
