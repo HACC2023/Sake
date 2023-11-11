@@ -19,6 +19,7 @@ const authVendor = asyncHandler(async (req, res) => {
       name: vendor.name,
       email: vendor.email,
       phone: vendor.phone,
+      role: vendor.role,
     });
   } else {
     res.status(401);

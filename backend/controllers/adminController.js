@@ -16,7 +16,12 @@ const authAdmin = asyncHandler(async (req, res) => {
     generateToken(res, admin._id, "admin");
     res
       .status(201)
-      .json({ _id: admin._id, name: admin.name, email: admin.email });
+      .json({
+        _id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      });
   } else {
     res.status(401);
     throw new Error("Invalid email or password");

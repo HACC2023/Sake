@@ -10,7 +10,11 @@ import {
 import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useAdminLogoutMutation } from "../slices/adminApiSlice";
+import {
+  useAdminLogoutMutation,
+  useVendorLogoutMutation,
+  useUserLogoutMutation,
+} from "../slices/adminApiSlice";
 import { logout } from "../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +29,8 @@ const Header = () => {
   const navigate = useNavigate();
 
   const [adminLogout] = useAdminLogoutMutation();
+  const [vendorLogout] = useVendorLogoutMutation();
+  const [userLogout] = useUserLogoutMutation();
 
   const handleOffcanvasToggle = () => {
     setShowOffcanvas(!showOffcanvas);
@@ -32,7 +38,9 @@ const Header = () => {
 
   const logoutHandler = async () => {
     try {
-      await adminLogout().unwrap();
+      if (userInfo.role === "admin") await adminLogout().unwrap();
+      if (userInfo.role === "vendor") await vendorLogout().unwrap();
+      if (userInfo.role === "user") await userLogout().unwrap();
       dispatch(logout());
       navigate("/");
     } catch (err) {
