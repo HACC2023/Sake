@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Navbar,
@@ -16,7 +16,7 @@ import {
   useUserLogoutMutation,
 } from "../slices/adminApiSlice";
 import { logout } from "../slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import "./Header.css";
 
@@ -27,6 +27,7 @@ const Header = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [adminLogout] = useAdminLogoutMutation();
   const [vendorLogout] = useVendorLogoutMutation();
@@ -35,6 +36,10 @@ const Header = () => {
   const handleOffcanvasToggle = () => {
     setShowOffcanvas(!showOffcanvas);
   };
+
+  useEffect(() => {
+    setShowOffcanvas(false);
+  }, [location.pathname]);
 
   const logoutHandler = async () => {
     try {
@@ -100,7 +105,8 @@ const Header = () => {
               </LinkContainer>
               <LinkContainer to="/signup">
                 <Nav.Link className="offcanvas-content">
-                  <FaSignOutAlt /> Sign Up <span className="text-muted">(User Only)</span>
+                  <FaSignOutAlt /> Sign Up{" "}
+                  <span className="text-muted">(User Only)</span>
                 </Nav.Link>
               </LinkContainer>
             </>

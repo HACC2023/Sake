@@ -79,7 +79,12 @@ const SignIn = () => {
             name="radio"
             value={radio}
             checked={role === radio}
-            onChange={e => setRole(e.currentTarget.value)}
+            onChange={e => {
+              setRole(e.currentTarget.value);
+              setEmail("");
+              setPassword("");
+              setPhone("");
+            }}
           >
             {radio}
           </ToggleButton>
