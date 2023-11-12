@@ -181,6 +181,14 @@ const updateLocation = asyncHandler(async (req, res) => {
   res.status(200).json(updatedVendor);
 });
 
+// @desc get all vendors
+// route POST /api/users/list-vendors
+// @access Public
+const getVendors = asyncHandler(async (req, res) => {
+  const vendors = await Vendor.find().select("name");
+  res.status(200).json(vendors);
+});
+
 export {
   authVendor,
   logoutVendor,
@@ -190,4 +198,5 @@ export {
   returnUser,
   updateLocation,
   getVendorProfile,
+  getVendors,
 };

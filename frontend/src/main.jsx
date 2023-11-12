@@ -19,7 +19,9 @@ import SignUp from "./screens/SignUp";
 import Admin from "./screens/Admin";
 import Vendor from "./screens/Vendor";
 import User from "./screens/User";
-import PrivateRoute from "./components/PrivateRoute";
+import AdminPrivateRoute from "./components/AdminPrivateRoute";
+import VendorPrivateRoute from "./components/VendorPrivateRoute";
+import UserPrivateRoute from "./components/UserPrivateRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,13 +31,13 @@ const router = createBrowserRouter(
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="" element={<PrivateRoute />}>
+      <Route path="" element={<AdminPrivateRoute />}>
         <Route path="/admin" element={<Admin />} />
       </Route>
-      <Route path="" element={<PrivateRoute />}>
+      <Route path="" element={<VendorPrivateRoute />}>
         <Route path="/vendor" element={<Vendor />} />
       </Route>
-      <Route path="" element={<PrivateRoute />}>
+      <Route path="" element={<UserPrivateRoute />}>
         <Route path="/user" element={<User />} />
       </Route>
     </Route>

@@ -77,6 +77,11 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         url: `${BASE_URL}/vendor/list-users`,
       }),
     }),
+    vendorGetVendors: builder.query({
+      query: () => ({
+        url: `${BASE_URL}/list-vendors`,
+      }),
+    }),
     vendorGetUserByPhone: builder.query({
       query: phone => ({
         url: `${BASE_URL}/vendor/user/${phone}`,
@@ -151,6 +156,7 @@ export const {
   useVendorLogoutMutation,
   useVendorProfileQuery,
   useVendorGetUsersQuery,
+  useVendorGetVendorsQuery,
   useVendorGetUserByPhoneQuery,
   useVendorCheckoutUserMutation,
   useVendorUserReturnMutation,

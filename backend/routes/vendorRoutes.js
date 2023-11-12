@@ -9,6 +9,7 @@ import {
   getAllUsers,
   getUserByPhone,
   getVendorProfile,
+  getVendors,
   logoutVendor,
   returnUser,
   updateLocation,
@@ -22,5 +23,6 @@ router.patch("/vendor/checkout-user/:phone", protectVendor, checkoutUser);
 router.patch("/vendor/user-return/:phone", protectVendor, returnUser);
 router.post("/vendor/location", protectVendor, updateLocation);
 router.get("/vendor", protectVendor, getVendorProfile);
+router.get("/list-vendors", getVendors);
 
 export default router;

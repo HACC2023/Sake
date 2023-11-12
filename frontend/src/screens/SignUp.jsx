@@ -1,7 +1,13 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
+import { toast } from "react-toastify";
+import Loader from "../components/Loader";
+import { useVendorGetVendorsQuery } from "../slices/adminApiSlice";
+import { useUserRegisterMutation } from "../slices/adminApiSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setCredentials } from "../slices/authSlice";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -9,10 +15,38 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [vendor, setVendor] = useState("");
 
+  const { data, isLoading, isError } = useVendorGetVendorsQuery();
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { userInfo } = useSelector(state => state.auth);
+
+  const [userRegister, { isLoading: registerLoading }] =
+    useUserRegisterMutation();
+
+  useEffect(() => {
+    if (userInfo) navigate(`/${userInfo.role}`);
+  }, [navigate, userInfo]);
+
   const submitHandler = async e => {
     e.preventDefault();
-    console.log("submit");
+    try {
+      const res = await userRegister({
+        vendorName: vendor,
+        name,
+        phone,
+        password,
+      }).unwrap();
+      toast.success("Signed up successfully");
+      dispatch(setCredentials({ ...res }));
+      navigate("/user");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
+  console.log(vendor);
+  if (isError) toast.error("Error loading vendors, please refresh.");
 
   return (
     <FormContainer>
@@ -20,10 +54,20 @@ const SignUp = () => {
       <Form onSubmit={submitHandler}>
         <Form.Group className="my-2" controlId="formGroupVendor">
           <Form.Label>Choose a Vendor</Form.Label>
-          <Form.Select aria-label="Click to Show Vendors">
-            <option value="1">Big Fish</option>
-            <option value="2">Big Meat</option>
-            <option value="3">fruit</option>
+          <Form.Select
+            aria-label="Click to Show Vendors"
+            onChange={e => setVendor(e.target.value)}
+          >
+            <option value=""></option>
+            {isLoading ? (
+              <option>LOADING...</option>
+            ) : (
+              data?.map(vendor => (
+                <option key={vendor._id} value={`${vendor.name}`}>
+                  {vendor.name}
+                </option>
+              ))
+            )}
           </Form.Select>
         </Form.Group>
         <Form.Group className="my-2" controlId="name">
@@ -56,9 +100,18 @@ const SignUp = () => {
           ></Form.Control>
         </Form.Group>
         <div className="text-center">
-          <Button type="submit" variant="primary" className="mt-3">
-            Register
-          </Button>
+          {registerLoading ? (
+            <Loader />
+          ) : (
+            <Button
+              type="submit"
+              variant="primary"
+              className="mt-3"
+              disabled={isError}
+            >
+              Register
+            </Button>
+          )}
 
           <Row className="py-3">
             <Col>
