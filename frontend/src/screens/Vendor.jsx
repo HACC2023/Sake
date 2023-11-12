@@ -8,8 +8,7 @@ import Loader from "../components/Loader";
 const Vendor = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [showRemoveContainersModal, setShowRemoveContainersModal] =
-    useState(false);
+  const [showSeeContainersModal, setShowSeeContainersModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [checkoutUser, setCheckoutUser] = useState("");
   const [checkoutContainer, setCheckoutContainer] = useState("");
@@ -45,16 +44,32 @@ const Vendor = () => {
     };
   }, [vendorProfileRefetch, usersRefetch]);
 
-  const handleShowAssignModal = () => setShowAssignModal(true);
+  const handleShowAssignModal = phone => {
+    setShowAssignModal(true);
+    setCheckoutUser(phone);
+    console.log(phone);
+  };
+
   const handleCloseAssignModal = () => setShowAssignModal(false);
-  const handleShowRemoveModal = () => setShowRemoveModal(true);
+
+  const handleShowRemoveModal = phone => {
+    setShowRemoveModal(true);
+    setReturnUser(phone);
+    console.log(phone);
+  };
+
   const handleCloseRemoveModal = () => setShowRemoveModal(false);
-  const handleShowRemoveContainersModal = () =>
-    setShowRemoveContainersModal(true);
-  const handleCloseRemoveContainersModal = () =>
-    setShowRemoveContainersModal(false);
+
+  const handleSeeContainers = phone => {
+    const user = users?.find(c => c.phone === phone);
+    console.log(user);
+    setSelectedCustomer(user);
+    setShowSeeContainersModal(true);
+  };
+
+  const handleCloseSeeContainersModal = () => setShowSeeContainersModal(false);
+
   const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [showSeeContainersModal, setShowSeeContainersModal] = useState(false);
 
   const handleAssignContainer = async () => {
     try {
@@ -88,20 +103,6 @@ const Vendor = () => {
     }
   };
 
-  const handleSeeContainers = phone => {
-    const user = users?.find(c => c.phone === phone);
-    console.log(user);
-    setSelectedCustomer(user);
-    setShowSeeContainersModal(true);
-  };
-
-  const handleCloseSeeContainersModal = () => setShowSeeContainersModal(false);
-
-  const handleRemoveContainers = customerId => {
-    console.log(`Remove Containers for customer ${customerId}`);
-    setShowRemoveContainersModal(true);
-  };
-
   const filteredUsers = users?.filter(
     user =>
       user.phone.includes(searchQuery) ||
@@ -111,18 +112,6 @@ const Vendor = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "30px" }} className="px-5">
       <h1>Vendor Portal</h1>
-      <div className="d-flex justify-content-center py-3">
-        <Button
-          variant="primary"
-          style={{ marginRight: "30px" }}
-          onClick={handleShowAssignModal}
-        >
-          Assign Container
-        </Button>
-        <Button variant="danger" onClick={handleShowRemoveModal}>
-          Remove Container
-        </Button>
-      </div>
       {/* See Containers Modal */}
       <Modal
         show={showSeeContainersModal}
@@ -134,7 +123,9 @@ const Vendor = () => {
         <Modal.Body>
           {selectedCustomer && (
             <div>
-              <p>Customer: {selectedCustomer.name}</p>
+              <p>
+                Customer: <span className="h5">{selectedCustomer.name}</span>
+              </p>
               <div>
                 <Table striped bordered hover className="text-center">
                   <thead>
@@ -172,28 +163,33 @@ const Vendor = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="customerId">
-              <Form.Label>Customer Phone Number:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter customer phone number"
-              />
-            </Form.Group>
-            <Form.Group controlId="numContainersAssign">
-              <Form.Label>Number of Containers to Assign:</Form.Label>
-              <Form.Control
-                type="number"
-                min="1"
-                placeholder="Enter number of containers"
-              />
-            </Form.Group>
             <Form.Group controlId="containerType">
               <Form.Label>Container Type:</Form.Label>
-              <Form.Control as="select">
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
+              <Form.Control
+                as="select"
+                value={checkoutContainer}
+                onChange={e => setCheckoutContainer(e.target.value)}
+              >
+                <option>Select container type</option>
+                {vendorProfile?.containerReceived?.map(container => (
+                  <option
+                    key={container._id}
+                    value={container.containerSchema.category}
+                  >
+                    {container.containerSchema.category}
+                  </option>
+                ))}
               </Form.Control>
+              <Form.Group controlId="numContainersAssign">
+                <Form.Label>Number of Containers to Assign:</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="1"
+                  placeholder="Enter number of containers"
+                  value={checkoutQuantity}
+                  onChange={e => setCheckoutQuantity(e.target.value)}
+                />
+              </Form.Group>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -214,12 +210,23 @@ const Vendor = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="customerIdRemove">
-              <Form.Label>Customer Phone Number:</Form.Label>
+            <Form.Group controlId="containerTypeRemove">
+              <Form.Label>Container Type:</Form.Label>
               <Form.Control
-                type="text"
-                placeholder="Enter customer phone number"
-              />
+                as="select"
+                value={returnContainer}
+                onChange={e => setReturnContainer(e.target.value)}
+              >
+                <option>Select container type</option>
+                {vendorProfile?.containerReceived?.map(container => (
+                  <option
+                    key={container._id}
+                    value={container.containerSchema.category}
+                  >
+                    {container.containerSchema.category}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
             <Form.Group controlId="numContainersRemove">
               <Form.Label>Number of Containers to Remove:</Form.Label>
@@ -227,15 +234,9 @@ const Vendor = () => {
                 type="number"
                 min="1"
                 placeholder="Enter number of containers"
+                value={returnQuantity}
+                onChange={e => setReturnQuantity(e.target.value)}
               />
-            </Form.Group>
-            <Form.Group controlId="containerTypeRemove">
-              <Form.Label>Container Type:</Form.Label>
-              <Form.Control as="select">
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -249,53 +250,6 @@ const Vendor = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Remove Containers Modal */}
-      <Modal
-        show={showRemoveContainersModal}
-        onHide={handleCloseRemoveContainersModal}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Remove Container</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="customerIdRemove">
-              <Form.Label>Customer Phone Number:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter customer phone number"
-              />
-            </Form.Group>
-            <Form.Group controlId="numContainersRemove">
-              <Form.Label>Number of Containers to Remove:</Form.Label>
-              <Form.Control
-                type="number"
-                min="1"
-                placeholder="Enter number of containers"
-              />
-            </Form.Group>
-            <Form.Group controlId="containerTypeRemove">
-              <Form.Label>Container Type:</Form.Label>
-              <Form.Control as="select">
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-              </Form.Control>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="secondary"
-            onClick={handleCloseRemoveContainersModal}
-          >
-            Close
-          </Button>
-          <Button variant="danger" onClick={handleRemoveContainer}>
-            Remove
-          </Button>
-        </Modal.Footer>
-      </Modal>
       <div className="mt-2 mb-4">
         <h5 className="mb-3">Containers Available:</h5>
         {vendorProfileLoading ? (
@@ -306,6 +260,7 @@ const Vendor = () => {
               <tr>
                 <th>Image</th>
                 <th>Container Type</th>
+                <th>Description</th>
                 <th>Quantity</th>
               </tr>
             </thead>
@@ -320,6 +275,7 @@ const Vendor = () => {
                     />
                   </td>
                   <td>{container.containerSchema.category}</td>
+                  <td>{container.containerSchema.desc}</td>
                   <td>{container.quantity}</td>
                 </tr>
               ))}
@@ -364,14 +320,14 @@ const Vendor = () => {
                     </Button>
                     <Button
                       variant="success"
-                      onClick={() => handleAssignContainers(user.phone)}
+                      onClick={() => handleShowAssignModal(user.phone)}
                       className="mx-3"
                     >
                       Checkout
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleRemoveContainers(user.phone)}
+                      onClick={() => handleShowRemoveModal(user.phone)}
                     >
                       Return
                     </Button>
