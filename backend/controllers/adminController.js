@@ -103,7 +103,10 @@ const logoutAdmin = asyncHandler(async (req, res) => {
 // route GET /api/users/admin/vendors
 // @access Private
 const getAllVendors = asyncHandler(async (req, res) => {
-  const vendors = await Vendor.find().select("-password");
+  const vendors = await Vendor.find({ containerOwner: req.admin._id })
+    .select("-password")
+    .populate({ path: "containerReceived.containerSchema" });
+  if (!vendors) return res.status(404).json({ message: "No vendor currently" });
   res.status(200).json(vendors);
 });
 
@@ -197,8 +200,23 @@ const removeVendor = asyncHandler(async (req, res) => {
 // @access Public
 const getContainers = asyncHandler(async (req, res) => {
   const containers = await Container.find();
-  console.log(containers);
   res.status(200).json(containers);
+});
+
+// @desc remove a vendor
+// route DELETE /api/users/admin/remove-vendor/${name}
+// @access Private
+const removeVendorProfile = asyncHandler(async (req, res) => {
+  const vendor = await Vendor.findOneAndDelete({
+    name: new RegExp(`^${req.params.name.replace(/-/g, " ")}$`, "i"),
+  });
+  if (vendor) {
+    res.status(200).json({
+      message: "Vendor removed successfully",
+    });
+  } else {
+    res.status(404).json({ message: "Vendor not found" });
+  }
 });
 
 export {
@@ -211,4 +229,5 @@ export {
   updateVendor,
   removeVendor,
   getContainers,
+  removeVendorProfile,
 };

@@ -25,4 +25,5 @@ router.post("/vendor/location", protectVendor, updateLocation);
 router.get("/vendor", protectVendor, getVendorProfile);
 router.get("/list-vendors", getVendors);
 
+
 export default router;

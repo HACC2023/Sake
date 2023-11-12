@@ -3,22 +3,44 @@ import { Modal, Button, Table, Form } from "react-bootstrap";
 import { useAdminGetContainersQuery } from "../slices/adminApiSlice";
 import { useVendorGetVendorsQuery } from "../slices/adminApiSlice";
 import { useAdminRegisterVendorMutation } from "../slices/adminApiSlice";
+import { useAdminUpdateVendorInventoryMutation } from "../slices/adminApiSlice";
+import { useAdminRemoveVendorInventoryMutation } from "../slices/adminApiSlice";
+import { useAdminGetVendorsQuery } from "../slices/adminApiSlice";
+import { useAdminRemoveVendorMutation } from "../slices/adminApiSlice";
 import { toast } from "react-toastify";
+import Loader from "../components/Loader";
 
 const Admin = () => {
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [vendorName, setVendorName] = useState("");
   const [vendorEmail, setVendorEmail] = useState("");
   const [vendorPhone, setVendorPhone] = useState("");
   const [vendorPassword, setVendorPassword] = useState("");
+  const [updateVendor, setUpdateVendor] = useState("");
+  const [updateContainer, setUpdateContainer] = useState("");
+  const [updateQuantity, setUpdateQuantity] = useState("");
+  const [removeVendor, setRemoveVendor] = useState("");
+  const [removeQuantity, setRemoveQuantity] = useState("");
+  const [removeContainer, setRemoveContainer] = useState("");
+  const [deleteVendor, setDeleteVendor] = useState("");
 
   const [adminRegisterVendor, { isLoading: registerVendorLoading }] =
     useAdminRegisterVendorMutation();
 
-  const [containersInStock, setContainersInStock] = useState({
-    small: 30,
-    medium: 25,
-    large: 20,
-  });
+  const [
+    adminUpdateVendorInventory,
+    { isLoading: updateVendorInventoryLoading },
+  ] = useAdminUpdateVendorInventoryMutation();
+
+  const [
+    adminRemoveVendorInventory,
+    { isLoading: RemoveVendorInventoryLoading },
+  ] = useAdminRemoveVendorInventoryMutation();
+
+  const [adminRemoveVendor, { isLoading: RemoveVendorLoading }] =
+    useAdminRemoveVendorMutation();
 
   const {
     data: containers,
@@ -34,51 +56,43 @@ const Admin = () => {
     refetch: vendorsRefetch,
   } = useVendorGetVendorsQuery();
 
+  const {
+    data: vendorsDetail,
+    isLoading: vendorsDetailLoading,
+    isError: vendorsDetailError,
+    refetch: vendorsDetailRefetch,
+  } = useAdminGetVendorsQuery();
+
   useEffect(() => {
     const pollInterval = setInterval(async () => {
       await containersRefetch();
       await vendorsRefetch();
+      await vendorsDetailRefetch();
     }, 5000);
     return () => {
       clearInterval(pollInterval);
     };
-  }, [containersRefetch, vendorsRefetch]);
-
-  const [containersAssigned, setContainersAssigned] = useState([
-    {
-      id: 1,
-      vendorName: "The Red Fish",
-      phoneNumber: "123-456-7890",
-      location: "Left Wing",
-      smallContainers: 5,
-      mediumContainers: 3,
-      largeContainers: 2,
-    },
-    {
-      id: 2,
-      vendorName: "The Blue Fish",
-      phoneNumber: "987-654-3210",
-      location: "Right Wing",
-      smallContainers: 3,
-      mediumContainers: 2,
-      largeContainers: 1,
-    },
-  ]);
-
-  const [showAssignModal, setShowAssignModal] = useState(false);
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  }, [containersRefetch, vendorsRefetch, vendorsDetailRefetch]);
 
   const handleShowAssignModal = () => setShowAssignModal(true);
-  const handleCloseAssignModal = () => setShowAssignModal(false);
+  const handleCloseAssignModal = () => {
+    setShowAssignModal(false);
+    setUpdateContainer("");
+    setUpdateQuantity("");
+    setUpdateVendor("");
+  };
   const handleShowRemoveModal = () => setShowRemoveModal(true);
-  const handleCloseRemoveModal = () => setShowRemoveModal(false);
+  const handleCloseRemoveModal = () => {
+    setShowRemoveModal(false);
+    setRemoveContainer("");
+    setRemoveQuantity("");
+    setRemoveVendor("");
+  };
   const [showCreateVendorModal, setShowCreateVendorModal] = useState(false);
   const [showRemoveVendorModal, setShowRemoveVendorModal] = useState(false);
-  const [selectedVendor, setSelectedVendor] = useState(null);
 
   const handleShowRemoveVendorModal = vendor => {
-    setSelectedVendor(vendor);
+    setDeleteVendor(vendor);
     setShowRemoveVendorModal(true);
   };
   const handleCloseRemoveVendorModal = () => setShowRemoveVendorModal(false);
@@ -91,12 +105,15 @@ const Admin = () => {
     setVendorPassword("");
   };
 
-  const handleRemoveVendor = () => {
+  const handleRemoveVendor = async () => {
     // needs function to actually remove
-    setContainersAssigned(prevVendors =>
-      prevVendors.filter(vendor => vendor.id !== selectedVendor.id)
-    );
-    handleCloseRemoveVendorModal();
+    try {
+      await adminRemoveVendor(deleteVendor).unwrap();
+      toast.success("Successfully Remove Vendor");
+      handleCloseRemoveVendorModal();
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const handleCreateVendorAccount = async () => {
@@ -115,30 +132,52 @@ const Admin = () => {
       setVendorPassword("");
       toast.success("Vendor Created Successfully");
     } catch (err) {
-      console.log("submitted");
-      console.log(err);
       toast.error(err?.data?.message || err.error);
     }
   };
 
-  const handleAssignContainer = () => {
-    handleCloseAssignModal();
+  const handleAssignContainer = async () => {
+    try {
+      await adminUpdateVendorInventory({
+        data: {
+          containerName: updateContainer,
+          quantity: updateQuantity,
+        },
+        name: updateVendor,
+      }).unwrap();
+      toast.success("Container assigned to vendor successfully");
+      handleCloseAssignModal();
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
-  const handleRemoveContainer = () => {
-    handleCloseRemoveModal();
+  const handleRemoveContainer = async () => {
+    try {
+      await adminRemoveVendorInventory({
+        data: {
+          containerName: removeContainer,
+          quantity: removeQuantity,
+        },
+        name: removeVendor,
+      }).unwrap();
+      toast.success("Container removed successfully");
+      handleCloseRemoveModal();
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
-  const filteredVendors = containersAssigned.filter(
+  const filteredVendors = vendorsDetail?.filter(
     vendor =>
-      vendor.vendorName.includes(searchQuery) ||
-      vendor.phoneNumber.includes(searchQuery)
+      vendor.name.includes(searchQuery.toUpperCase()) ||
+      vendor.phone.includes(searchQuery)
   );
 
   return (
     <div className="px-5" style={{ textAlign: "center", marginTop: "30px" }}>
       <h1>Admin Portal</h1>
-      <div className="py-3">
+      <div className="py-3 d-flex justify-content-center">
         <Button variant="primary" onClick={handleShowAssignModal}>
           Assign Container
         </Button>
@@ -162,7 +201,11 @@ const Admin = () => {
           <Form>
             <Form.Group controlId="vendorNameAssign">
               <Form.Label>Vendor Name:</Form.Label>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={updateVendor}
+                onChange={e => setUpdateVendor(e.target.value)}
+              >
                 <option>Select a Vendor</option>
                 {vendors?.map(vendor => (
                   <option key={vendor._id} value={vendor.name}>
@@ -177,11 +220,18 @@ const Admin = () => {
                 type="number"
                 min="1"
                 placeholder="Enter number of containers"
+                value={updateQuantity}
+                onChange={e => setUpdateQuantity(e.target.value)}
+                required
               />
             </Form.Group>
             <Form.Group controlId="containerTypeAssign">
               <Form.Label>Container Type:</Form.Label>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={updateContainer}
+                onChange={e => setUpdateContainer(e.target.value)}
+              >
                 <option>Select Container Type</option>
                 {containers?.map(container => (
                   <option key={container._id} value={container.category}>
@@ -208,8 +258,11 @@ const Admin = () => {
           <Modal.Title>Remove Vendor</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedVendor && (
-            <p>Are you sure you want to remove {selectedVendor.vendorName}?</p>
+          {deleteVendor && (
+            <p>
+              Are you sure you want to remove{" "}
+              <span className="h5">{deleteVendor}?</span>
+            </p>
           )}
         </Modal.Body>
         <Modal.Footer>
@@ -231,7 +284,11 @@ const Admin = () => {
           <Form>
             <Form.Group controlId="vendorNameRemove">
               <Form.Label>Vendor Name:</Form.Label>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={removeVendor}
+                onChange={e => setRemoveVendor(e.target.value)}
+              >
                 <option>Select a Vendor</option>
                 {vendors?.map(vendor => (
                   <option key={vendor._id} value={vendor.name}>
@@ -246,11 +303,18 @@ const Admin = () => {
                 type="number"
                 min="1"
                 placeholder="Enter number of containers"
+                value={removeQuantity}
+                onChange={e => setRemoveQuantity(e.target.value)}
+                required
               />
             </Form.Group>
             <Form.Group controlId="containerTypeRemove">
               <Form.Label>Container Type:</Form.Label>
-              <Form.Control as="select">
+              <Form.Control
+                as="select"
+                value={removeContainer}
+                onChange={e => setRemoveContainer(e.target.value)}
+              >
                 <option>Select Container Type</option>
                 {containers?.map(container => (
                   <option key={container._id} value={container.category}>
@@ -326,23 +390,37 @@ const Admin = () => {
         </Modal.Footer>
       </Modal>
       <div className="mt-2 mb-4">
-        <h5 className="mb-3">Containers In Stock:</h5>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Container Type</th>
-              <th>Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(containersInStock).map(([type, quantity]) => (
-              <tr key={type}>
-                <td>{type}</td>
-                <td>{quantity}</td>
+        <h5 className="mb-3">Containers Available:</h5>
+        {containersLoading ? (
+          <Loader />
+        ) : (
+          <Table striped bordered hover className="container-md mx-auto">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Container Type</th>
+                <th>Cost</th>
+                <th>Rental Price</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {containers?.map(({ _id, category, imgUrl, price, cost }) => (
+                <tr key={_id} className="align-middle">
+                  <td>
+                    <img
+                      src={imgUrl}
+                      alt={category}
+                      style={{ width: "60px", height: "60px" }}
+                    />
+                  </td>
+                  <td>{category}</td>
+                  <td>{cost}</td>
+                  <td>{price}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </div>
       <div>
         {/* Containers Assigned to Vendors Table */}
@@ -351,45 +429,54 @@ const Admin = () => {
         {/* search bar */}
         <input
           type="text"
-          placeholder="Name/Number"
+          placeholder="Name or Phone Number"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
           className="mt-2 mb-4"
         />
-
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Vendor Name</th>
-              <th>Phone Number</th>
-              <th>Location</th>
-              <th>Small Containers</th>
-              <th>Medium Containers</th>
-              <th>Large Containers</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredVendors.map(vendor => (
-              <tr key={vendor.id}>
-                <td>{vendor.vendorName}</td>
-                <td>{vendor.phoneNumber}</td>
-                <td>{vendor.location}</td>
-                <td>{vendor.smallContainers}</td>
-                <td>{vendor.mediumContainers}</td>
-                <td>{vendor.largeContainers}</td>
-                <td>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleShowRemoveVendorModal(vendor)}
-                  >
-                    Remove Vendor
-                  </Button>
-                </td>
+        {vendorsDetailLoading ? (
+          <Loader />
+        ) : (
+          <Table striped bordered hover responsive="md">
+            <thead>
+              <tr>
+                <th>Vendor Name</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Containers Received</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {filteredVendors?.map(vendor => (
+                <tr key={vendor._id} className="align-middle">
+                  <td>{vendor.name}</td>
+                  <td>{vendor.phone}</td>
+                  <td>{vendor.email}</td>
+                  <td>
+                    {vendor.containerReceived?.map(container => (
+                      <div
+                        key={container._id}
+                        className="d-flex justify-content-between"
+                      >
+                        <p>{container.containerSchema.category}</p>
+                        <p>{container.quantity}</p>
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleShowRemoveVendorModal(vendor.name)}
+                    >
+                      Remove Vendor
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
       </div>
     </div>
   );

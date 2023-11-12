@@ -12,6 +12,7 @@ import {
   updateVendor,
   removeVendor,
   getContainers,
+  removeVendorProfile,
 } from "../controllers/adminController.js";
 
 router.post("/register-admin", registerAdmin);
@@ -25,5 +26,6 @@ router
   .patch(protectAdmin, updateVendor);
 router.patch("/admin/remove/vendors/:name", protectAdmin, removeVendor);
 router.get("/containers", getContainers);
+router.delete("/admin/remove-vendor/:name", protectAdmin, removeVendorProfile);
 
 export default router;

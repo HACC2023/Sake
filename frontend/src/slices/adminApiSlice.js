@@ -45,15 +45,21 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         url: `${BASE_URL}/admin/vendors/${name}`,
       }),
     }),
+    adminRemoveVendor: builder.mutation({
+      query: name => ({
+        url: `${BASE_URL}/admin/remove-vendor/${name}`,
+        method: "DELETE",
+      }),
+    }),
     adminUpdateVendorInventory: builder.mutation({
-      query: (data, name) => ({
+      query: ({ data, name }) => ({
         url: `${BASE_URL}/admin/vendors/${name}`,
         method: "PATCH",
         body: data,
       }),
     }),
     adminRemoveVendorInventory: builder.mutation({
-      query: (data, name) => ({
+      query: ({ data, name }) => ({
         url: `${BASE_URL}/admin/remove/vendors/${name}`,
         method: "PATCH",
         body: data,
@@ -93,14 +99,14 @@ export const adminApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     vendorCheckoutUser: builder.mutation({
-      query: (data, phone) => ({
+      query: ({ data, phone }) => ({
         url: `${BASE_URL}/vendor/checkout-user/${phone}`,
         method: "PATCH",
         body: data,
       }),
     }),
     vendorUserReturn: builder.mutation({
-      query: (data, phone) => ({
+      query: ({ data, phone }) => ({
         url: `${BASE_URL}/vendor/user-return/${phone}`,
         method: "PATCH",
         body: data,
@@ -172,4 +178,5 @@ export const {
   useUserRegisterMutation,
   useUserProfileQuery,
   useUserAddPaymentMutation,
+  useAdminRemoveVendorMutation,
 } = adminApiSlice;
