@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
 import { useAdminGetContainersQuery } from "../slices/adminApiSlice";
 import { useVendorGetVendorsQuery } from "../slices/adminApiSlice";
+import { useAdminRegisterVendorMutation } from "../slices/adminApiSlice";
+import { toast } from "react-toastify";
 
 const Admin = () => {
+  const [vendorName, setVendorName] = useState("");
+  const [vendorEmail, setVendorEmail] = useState("");
+  const [vendorPhone, setVendorPhone] = useState("");
+  const [vendorPassword, setVendorPassword] = useState("");
+
+  const [adminRegisterVendor, { isLoading: registerVendorLoading }] =
+    useAdminRegisterVendorMutation();
+
   const [containersInStock, setContainersInStock] = useState({
     small: 30,
     medium: 25,
@@ -14,13 +24,25 @@ const Admin = () => {
     data: containers,
     isLoading: containersLoading,
     isError: containersError,
+    refetch: containersRefetch,
   } = useAdminGetContainersQuery();
 
   const {
     data: vendors,
     isLoading: vendorsLoading,
     isError: vendorsError,
+    refetch: vendorsRefetch,
   } = useVendorGetVendorsQuery();
+
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      await containersRefetch();
+      await vendorsRefetch();
+    }, 5000);
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [containersRefetch, vendorsRefetch]);
 
   const [containersAssigned, setContainersAssigned] = useState([
     {
@@ -61,7 +83,13 @@ const Admin = () => {
   };
   const handleCloseRemoveVendorModal = () => setShowRemoveVendorModal(false);
   const handleShowCreateVendorModal = () => setShowCreateVendorModal(true);
-  const handleCloseCreateVendorModal = () => setShowCreateVendorModal(false);
+  const handleCloseCreateVendorModal = () => {
+    setShowCreateVendorModal(false);
+    setVendorName("");
+    setVendorPhone("");
+    setVendorEmail("");
+    setVendorPassword("");
+  };
 
   const handleRemoveVendor = () => {
     // needs function to actually remove
@@ -71,9 +99,26 @@ const Admin = () => {
     handleCloseRemoveVendorModal();
   };
 
-  const handleCreateVendorAccount = () => {
+  const handleCreateVendorAccount = async () => {
     // account creation
-    handleCloseCreateVendorModal();
+    try {
+      await adminRegisterVendor({
+        name: vendorName.toUpperCase(),
+        email: vendorEmail,
+        phone: vendorPhone,
+        password: vendorPassword,
+      }).unwrap();
+      handleCloseCreateVendorModal();
+      setVendorName("");
+      setVendorEmail("");
+      setVendorPhone("");
+      setVendorPassword("");
+      toast.success("Vendor Created Successfully");
+    } catch (err) {
+      console.log("submitted");
+      console.log(err);
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   const handleAssignContainer = () => {
@@ -235,23 +280,39 @@ const Admin = () => {
           <Form>
             <Form.Group controlId="vendorNameCreate">
               <Form.Label>Vendor Name:</Form.Label>
-              <Form.Control type="text" placeholder="Enter vendor name" />
+              <Form.Control
+                type="text"
+                placeholder="Enter vendor name"
+                value={vendorName}
+                onChange={e => setVendorName(e.target.value)}
+              />
             </Form.Group>
             <Form.Group controlId="vendorEmailCreate">
               <Form.Label>Email:</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={vendorEmail}
+                onChange={e => setVendorEmail(e.target.value)}
+              />
             </Form.Group>
             <Form.Group controlId="vendorPhoneCreate">
               <Form.Label>Phone Number:</Form.Label>
-              <Form.Control type="tel" placeholder="Enter phone number" />
+              <Form.Control
+                type="tel"
+                placeholder="Enter phone number"
+                value={vendorPhone}
+                onChange={e => setVendorPhone(e.target.value)}
+              />
             </Form.Group>
             <Form.Group controlId="vendorPasswordCreate">
               <Form.Label>Password:</Form.Label>
-              <Form.Control type="password" placeholder="Enter password" />
-            </Form.Group>
-            <Form.Group controlId="vendorConfirmPasswordCreate">
-              <Form.Label>Confirm Password:</Form.Label>
-              <Form.Control type="password" placeholder="Confirm password" />
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={vendorPassword}
+                onChange={e => setVendorPassword(e.target.value)}
+              />
             </Form.Group>
           </Form>
         </Modal.Body>

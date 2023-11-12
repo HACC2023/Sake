@@ -15,7 +15,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [vendor, setVendor] = useState("");
 
-  const { data, isLoading, isError } = useVendorGetVendorsQuery();
+  const { data, isLoading, isError, refetch } = useVendorGetVendorsQuery();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,6 +28,11 @@ const SignUp = () => {
   useEffect(() => {
     if (userInfo) navigate(`/${userInfo.role}`);
   }, [navigate, userInfo]);
+
+  useEffect(() => {
+    const pollingInterval = setInterval(() => refetch(), 5000);
+    return () => clearInterval(pollingInterval);
+  }, [refetch]);
 
   const submitHandler = async e => {
     e.preventDefault();

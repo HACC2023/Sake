@@ -58,7 +58,9 @@ const registerAdmin = asyncHandler(async (req, res) => {
 const registerVendor = asyncHandler(async (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  const vendorExists = await Vendor.findOne({ email });
+  const vendorExists = await Vendor.findOne({
+    $or: [{ email }, { name }, { phone }],
+  });
 
   if (vendorExists) {
     res.status(400);
