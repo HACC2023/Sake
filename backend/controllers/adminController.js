@@ -14,14 +14,12 @@ const authAdmin = asyncHandler(async (req, res) => {
 
   if (admin && (await admin.matchPasswords(password))) {
     generateToken(res, admin._id, "admin");
-    res
-      .status(201)
-      .json({
-        _id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
-      });
+    res.status(201).json({
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      role: admin.role,
+    });
   } else {
     res.status(401);
     throw new Error("Invalid email or password");
@@ -192,6 +190,15 @@ const removeVendor = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc get containers
+// route GET /api/users/containers
+// @access Public
+const getContainers = asyncHandler(async (req, res) => {
+  const containers = await Container.find();
+  console.log(containers);
+  res.status(200).json(containers);
+});
+
 export {
   authAdmin,
   registerAdmin,
@@ -201,4 +208,5 @@ export {
   getVendorByName,
   updateVendor,
   removeVendor,
+  getContainers,
 };

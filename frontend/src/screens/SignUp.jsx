@@ -58,7 +58,7 @@ const SignUp = () => {
             aria-label="Click to Show Vendors"
             onChange={e => setVendor(e.target.value)}
           >
-            <option value=""></option>
+            <option value="">Select a Vendor</option>
             {isLoading ? (
               <option>LOADING...</option>
             ) : (
