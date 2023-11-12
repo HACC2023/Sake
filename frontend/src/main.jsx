@@ -11,22 +11,33 @@ import { Provider } from "react-redux";
 import App from "./App.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import Home from "./screens/Home.jsx";
-import SignIn from "./screens/SignIn.jsx";
-import SignUp from "./screens/SignUp.jsx";
-import Admin from "./screens/Admin.jsx";
-import Vendor from "./screens/Vendor.jsx";
-import User from "./screens/User.jsx";
+import Home from "./screens/Home";
+import About from "./screens/About";
+import Contact from "./screens/Contact";
+import SignIn from "./screens/SignIn";
+import SignUp from "./screens/SignUp";
+import Admin from "./screens/Admin";
+import Vendor from "./screens/Vendor";
+import User from "./screens/User";
+import PrivateRoute from "./components/PrivateRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index={true} path="/" element={<Home />} />
       <Route path="/signin" element={<SignIn />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="/vendor" element={<Vendor />} />
-      <Route path="/user" element={<User />} />
+      <Route path="" element={<PrivateRoute />}>
+        <Route path="/admin" element={<Admin />} />
+      </Route>
+      <Route path="" element={<PrivateRoute />}>
+        <Route path="/vendor" element={<Vendor />} />
+      </Route>
+      <Route path="" element={<PrivateRoute />}>
+        <Route path="/user" element={<User />} />
+      </Route>
     </Route>
   )
 );

@@ -7,7 +7,13 @@ import {
   NavDropdown,
   Badge,
 } from "react-bootstrap";
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaHome,
+  FaAngellist,
+  FaMailBulk,
+} from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -85,11 +91,28 @@ const Header = () => {
           <Offcanvas.Title>Site Navigation</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className="offcanvas-body">
+          <LinkContainer to="/">
+            <Nav.Link className="offcanvas-content">
+              <FaHome /> Home
+            </Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/about">
+            <Nav.Link className="offcanvas-content">
+              <FaAngellist /> About Us
+            </Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/contact">
+            <Nav.Link className="offcanvas-content">
+              <FaMailBulk /> Contact
+            </Nav.Link>
+          </LinkContainer>
           {userInfo ? (
             <>
               <NavDropdown title={userInfo.name} id="username">
-                <LinkContainer to="/">
-                  <NavDropdown.Item>Profile</NavDropdown.Item>
+                <LinkContainer
+                  to={`/${JSON.parse(localStorage.getItem("userInfo")).role}`}
+                >
+                  <NavDropdown.Item>Dashboard</NavDropdown.Item>
                 </LinkContainer>
                 <NavDropdown.Item onClick={logoutHandler}>
                   Logout
