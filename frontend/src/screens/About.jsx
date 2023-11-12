@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 const About = () => {
   const containerStyle = {
     position: "absolute",
-    top: "25%",
+    top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     backgroundColor: "rgba(255, 255, 255, 0.8)",
@@ -17,11 +17,11 @@ const About = () => {
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", height:"100vh" }}>
       <img
         src="https://images.squarespace-cdn.com/content/v1/5bb2972af4755a2a5eca6b7c/1538445058110-AJF7QG8H62P9UUZBIM89/OahuBeach_Above-2.jpg?format=2500w"
         alt="Banner"
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "100%", height: "100%" }}
       />
       <div style={containerStyle}>
         <Container>

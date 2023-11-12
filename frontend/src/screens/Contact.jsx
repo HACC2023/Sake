@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 const Contact = () => {
   const contactContainerStyle = {
     position: "absolute",
-    top: "20%",
+    top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     backgroundColor: "rgba(255, 255, 255, 0.85)",
@@ -21,17 +21,17 @@ const Contact = () => {
   };
 
   return (
-    <div style={{ position: "relative" }}>
+    <div style={{ position: "relative", height: "100vh" }}>
       <img
         src="https://images.squarespace-cdn.com/content/v1/5bb2972af4755a2a5eca6b7c/1538445058110-AJF7QG8H62P9UUZBIM89/OahuBeach_Above-2.jpg?format=2500w"
         alt="Banner"
-        style={{ width: "100%", height: "auto" }}
+        style={{ width: "100%", height: "100%" }}
       />
 
       <div style={contactContainerStyle}>
         <Container>
           <Row style={rowStyle}>
-            <Col>
+            <Col className="text-center">
               <h2>Contact Us</h2>
             </Col>
           </Row>
@@ -44,19 +44,20 @@ const Contact = () => {
             <Col md={6}>
               <h3>Instagram</h3>
               <p>@FullCycleTakeout</p>
-              <p>
-                <a href="https://www.instagram.com/fullcycletakeout/?hl=en" target="_blank">
-                    https://www.instagram.com/fullcycletakeout/
-                </a>
-              </p>
             </Col>
           </Row>
           <Row style={rowStyle}>
             <Col>
               <h3>Form</h3>
-              <p>Alternatively, you use the following link below and fill out a form to address any inquiries.</p>
               <p>
-                <a href="https://www.fullcycletakeouthawaii.org/get-in-touch" target="_blank">
+                Alternatively, you use the following link below and fill out a
+                form to address any inquiries.
+              </p>
+              <p>
+                <a
+                  href="https://www.fullcycletakeouthawaii.org/get-in-touch"
+                  target="_blank"
+                >
                   https://www.fullcycletakeouthawaii.org/get-in-touch
                 </a>
               </p>

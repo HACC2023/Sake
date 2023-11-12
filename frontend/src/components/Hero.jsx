@@ -7,7 +7,6 @@ const textShadowStyle = {
 };
 
 const Hero = () => {
-  document.body.style.backgroundColor = "#212529";
   return (
     <div>
       <Carousel>
@@ -58,10 +57,9 @@ const Hero = () => {
           backgroundColor: "#2F5C86",
           padding: "20px",
           textAlign: "center",
-          borderRadius: "100px",
         }}
       >
-        <Container>
+        <Container className="py-4">
           <h2 style={{ ...textShadowStyle, color: '#8CB890' }}>The Mission</h2>
           <p style={{ ...textShadowStyle, color: 'white', fontSize: '18px' }}>
             Our MISSION is to provide zero waste education, resources, and programs to build an ethical & responsible consumer culture.
