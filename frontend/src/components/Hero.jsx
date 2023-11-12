@@ -1,6 +1,5 @@
-import React from "react";
 import { Carousel, Image, Container } from "react-bootstrap";
-import Footer from "../components/Footer";
+import "./Hero.css";
 
 const textShadowStyle = {
   textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
@@ -15,10 +14,10 @@ const Hero = () => {
         <Carousel.Item interval={1000}>
           <Image src="https://www.honolulumagazine.com/content/uploads/2021/08/m/h/full-cycle-takeout-photo-by-erik-kabik.jpg" />
           <Carousel.Caption>
-            <h3 style={{ ...textShadowStyle, fontSize: '100px' }}>
+            <h3 style={{ ...textShadowStyle, fontSize: '50px' }}>
               <strong>Oahu Zero Waste</strong>
             </h3>
-            <p style={{ ...textShadowStyle, fontSize: '30px' }}>
+            <p style={{ ...textShadowStyle, fontSize: '20px' }}>
               Hawai’i’s first reusable takeout container program.
             </p>
           </Carousel.Caption>

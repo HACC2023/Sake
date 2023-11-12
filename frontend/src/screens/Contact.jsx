@@ -8,16 +8,16 @@ const Contact = () => {
     top: "20%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    backgroundColor: "rgba(255, 255, 255, 0.85)", // Adjust the background color and opacity as needed
+    backgroundColor: "rgba(255, 255, 255, 0.85)",
     padding: "20px",
-    borderRadius: "50px", // Set borderRadius to 0 to remove rounded corners
+    borderRadius: "50px",
     boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
-    width: "60%", // Adjust the width as needed
-    maxWidth: "100%", // Ensure the container doesn't exceed the image width
+    width: "60%",
+    maxWidth: "100%",
   };
 
   const rowStyle = {
-    marginBottom: "20px", // Adjust the margin bottom as needed
+    marginBottom: "20px",
   };
 
   return (
@@ -28,7 +28,6 @@ const Contact = () => {
         style={{ width: "100%", height: "auto" }}
       />
 
-      {/* Contact details with grey background */}
       <div style={contactContainerStyle}>
         <Container>
           <Row style={rowStyle}>
@@ -37,15 +36,19 @@ const Contact = () => {
             </Col>
           </Row>
           <Row style={rowStyle}>
-            <Col md={6}>
-              <h3>Address</h3>
-              <p>10 Honolulu St</p>
-              <p>Oahu, 96826</p>
-            </Col>
             <Col>
               <h3>Email</h3>
               <p>oahu.zerowaste@gmail.com</p>
               <p>info@fullcycletakeout.org</p>
+            </Col>
+            <Col md={6}>
+              <h3>Instagram</h3>
+              <p>@FullCycleTakeout</p>
+              <p>
+                <a href="https://www.instagram.com/fullcycletakeout/?hl=en" target="_blank">
+                    https://www.instagram.com/fullcycletakeout/
+                </a>
+              </p>
             </Col>
           </Row>
           <Row style={rowStyle}>
@@ -54,7 +57,7 @@ const Contact = () => {
               <p>Alternatively, you use the following link below and fill out a form to address any inquiries.</p>
               <p>
                 <a href="https://www.fullcycletakeouthawaii.org/get-in-touch" target="_blank">
-                https://www.fullcycletakeouthawaii.org/get-in-touch
+                  https://www.fullcycletakeouthawaii.org/get-in-touch
                 </a>
               </p>
             </Col>
