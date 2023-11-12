@@ -7,7 +7,7 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [vendor, setVendor] = useState("");
 
   const submitHandler = async e => {
     e.preventDefault();
@@ -18,6 +18,14 @@ const SignUp = () => {
     <FormContainer>
       <h1>Sign Up (User)</h1>
       <Form onSubmit={submitHandler}>
+        <Form.Group className="my-2" controlId="formGroupVendor">
+          <Form.Label>Choose a Vendor</Form.Label>
+          <Form.Select aria-label="Click to Show Vendors">
+            <option value="1">Big Fish</option>
+            <option value="2">Big Meat</option>
+            <option value="3">fruit</option>
+          </Form.Select>
+        </Form.Group>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Your Name</Form.Label>
           <Form.Control
@@ -47,26 +55,17 @@ const SignUp = () => {
             onChange={e => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
+        <div className="text-center">
+          <Button type="submit" variant="primary" className="mt-3">
+            Register
+          </Button>
 
-        <Form.Group className="my-2" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
-
-        <Button type="submit" variant="primary" className="mt-3">
-          Register
-        </Button>
-
-        <Row className="py-3">
-          <Col>
-            Already have an account? <Link to="/signin">Sign In</Link>
-          </Col>
-        </Row>
+          <Row className="py-3">
+            <Col>
+              Already have an account? <Link to="/signin">Sign In</Link>
+            </Col>
+          </Row>
+        </div>
       </Form>
     </FormContainer>
   );

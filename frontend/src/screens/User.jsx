@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
 
 const User = () => {
   const [containersOwned, setContainersOwned] = useState(3);
   const [currentBalance, setCurrentBalance] = useState(50);
+  const [currentReturned, setCurrentReturned] = useState(10);
   const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
   const [showPayBalanceModal, setShowPayBalanceModal] = useState(false);
 
@@ -19,28 +20,31 @@ const User = () => {
   const handleClosePayBalanceModal = () => setShowPayBalanceModal(false);
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>User Portal</h1>
       <p>Containers Owned: {containersOwned}</p>
       <p>Current Balance: ${currentBalance}</p>
-      <button style={{ marginRight: '10px' }} onClick={handleShowGenerateCodeModal}>
+      <p>Total Containers Returned: ${currentReturned}</p>
+      <button
+        style={{ marginRight: "10px" }}
+        onClick={handleShowGenerateCodeModal}
+      >
         Generate Code
       </button>
-      <button onClick={handleShowPayBalanceModal}>
-        Pay Balance
-      </button>
+      <button onClick={handleShowPayBalanceModal}>Pay Balance</button>
 
-      {/* checkout button */} 
+      {/* checkout button */}
       <Modal show={showGenerateCodeModal} onHide={handleCloseGenerateCodeModal}>
         <Modal.Header closeButton>
           <Modal.Title>Checkout Container</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-
-
-          <p>Generated Code: <strong>{Math.random().toString(36).substr(2, 5)}</strong></p> {/* eventually this will be a variable tha the vendor can interact with */}
+          <p>
+            Generated Code:{" "}
+            <strong>{Math.random().toString(36).substr(2, 5)}</strong>
+          </p>{" "}
+          {/* eventually this will be a variable tha the vendor can interact with */}
           <p>Please don't close this window until you are done checking out.</p>
-
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseGenerateCodeModal}>
@@ -55,21 +59,13 @@ const User = () => {
           <Modal.Title>Pay Balance</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-
-
-
           <p>Current Balance: ${currentBalance}</p>
-
-
-          
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClosePayBalanceModal}>
             Close
           </Button>
-          <Button variant="primary" >
-            Pay Now
-          </Button>
+          <Button variant="primary">Pay Now</Button>
         </Modal.Footer>
       </Modal>
     </div>
