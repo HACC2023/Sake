@@ -3,11 +3,15 @@ import { Modal, Button, Table, Form } from "react-bootstrap";
 import { useVendorProfileQuery } from "../slices/adminApiSlice";
 import { useVendorGetUsersQuery } from "../slices/adminApiSlice";
 import { useVendorCheckoutUserMutation } from "../slices/adminApiSlice";
+import { useVendorUserReturnMutation } from "../slices/adminApiSlice";
+import { useVendorUpdateLocationMutation } from "../slices/adminApiSlice";
+import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 
 const Vendor = () => {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [showSeeContainersModal, setShowSeeContainersModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [checkoutUser, setCheckoutUser] = useState("");
@@ -16,6 +20,8 @@ const Vendor = () => {
   const [returnUser, setReturnUser] = useState("");
   const [returnContainer, setReturnContainer] = useState("");
   const [returnQuantity, setReturnQuantity] = useState("");
+  const [returnLocation, setReturnLocation] = useState("");
+  const [newLocation, setNewLocation] = useState("");
 
   const {
     data: vendorProfile,
@@ -34,6 +40,12 @@ const Vendor = () => {
   const [vendorCheckoutUser, { isLoading: vendorCheckoutUserLoading }] =
     useVendorCheckoutUserMutation();
 
+  const [vendorUserReturn, { isLoading: vendorReturnUserLoading }] =
+    useVendorUserReturnMutation();
+
+  const [vendorUpdateLocation, { isLoading: vendorUpdateLocationLoading }] =
+    useVendorUpdateLocationMutation();
+
   useEffect(() => {
     const pollInterval = setInterval(async () => {
       await vendorProfileRefetch();
@@ -44,25 +56,43 @@ const Vendor = () => {
     };
   }, [vendorProfileRefetch, usersRefetch]);
 
-  const handleShowAssignModal = phone => {
+  const handleShowAssignModal = customer => {
+    const user = users?.find(c => c.phone === customer.phone);
+    setSelectedCustomer(user);
     setShowAssignModal(true);
-    setCheckoutUser(phone);
-    console.log(phone);
+    setCheckoutUser(customer.phone);
   };
 
-  const handleCloseAssignModal = () => setShowAssignModal(false);
+  const handleCloseAssignModal = () => {
+    setShowAssignModal(false);
+    setCheckoutContainer("");
+    setCheckoutQuantity("");
+  };
 
-  const handleShowRemoveModal = phone => {
+  const handleShowLocationModal = () => {
+    setShowLocationModal(true);
+  };
+
+  const handleCloseLocationModal = () => {
+    setShowLocationModal(false);
+    setNewLocation("");
+  };
+
+  const handleShowRemoveModal = customer => {
+    const user = users?.find(c => c.phone === customer.phone);
+    setSelectedCustomer(user);
     setShowRemoveModal(true);
-    setReturnUser(phone);
-    console.log(phone);
+    setReturnUser(customer.phone);
   };
 
-  const handleCloseRemoveModal = () => setShowRemoveModal(false);
+  const handleCloseRemoveModal = () => {
+    setShowRemoveModal(false);
+    setReturnContainer("");
+    setReturnQuantity("");
+  };
 
-  const handleSeeContainers = phone => {
-    const user = users?.find(c => c.phone === phone);
-    console.log(user);
+  const handleSeeContainers = customer => {
+    const user = users?.find(c => c.phone === customer.phone);
     setSelectedCustomer(user);
     setShowSeeContainersModal(true);
   };
@@ -73,14 +103,14 @@ const Vendor = () => {
 
   const handleAssignContainer = async () => {
     try {
-      await adminUpdateVendorInventory({
+      await vendorCheckoutUser({
         data: {
-          containerName: updateContainer,
-          quantity: updateQuantity,
+          containerName: checkoutContainer,
+          quantity: checkoutQuantity,
         },
-        name: updateVendor,
+        phone: checkoutUser,
       }).unwrap();
-      toast.success("Container assigned to vendor successfully");
+      toast.success("Container assigned to user successfully");
       handleCloseAssignModal();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
@@ -89,15 +119,26 @@ const Vendor = () => {
 
   const handleRemoveContainer = async () => {
     try {
-      await adminRemoveVendorInventory({
+      await vendorUserReturn({
         data: {
-          containerName: removeContainer,
-          quantity: removeQuantity,
+          containerName: returnContainer,
+          quantity: returnQuantity,
+          location: returnLocation,
         },
-        name: removeVendor,
+        phone: returnUser,
       }).unwrap();
-      toast.success("Container removed successfully");
+      toast.success("Container return updated successfully");
       handleCloseRemoveModal();
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const handleAddLocation = async () => {
+    try {
+      await vendorUpdateLocation({ returnLocation: newLocation }).unwrap();
+      toast.success("Added Location Successfully");
+      handleCloseLocationModal();
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -112,6 +153,27 @@ const Vendor = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "30px" }} className="px-5">
       <h1>Vendor Portal</h1>
+      <div className="my-3">
+        <h3>Return Location:</h3>
+        {vendorProfileLoading ? (
+          <Loader />
+        ) : (
+          <div>
+            {vendorProfile?.location?.map(loc => (
+              <span key={loc} className="mx-2 fs-5">
+                {loc}
+              </span>
+            ))}
+          </div>
+        )}
+        <Button
+          variant="success"
+          className="mt-3"
+          onClick={handleShowLocationModal}
+        >
+          Add Location
+        </Button>
+      </div>
       {/* See Containers Modal */}
       <Modal
         show={showSeeContainersModal}
@@ -152,6 +214,34 @@ const Vendor = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseSeeContainersModal}>
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Add location Container Modal */}
+      <Modal show={showLocationModal} onHide={handleCloseLocationModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Return Location</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="returnLocation">
+              <Form.Label>Location:</Form.Label>
+              <Form.Control
+                type="text"
+                required
+                value={newLocation}
+                onChange={e => setNewLocation(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseLocationModal}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleAddLocation}>
+            Add
           </Button>
         </Modal.Footer>
       </Modal>
@@ -218,12 +308,9 @@ const Vendor = () => {
                 onChange={e => setReturnContainer(e.target.value)}
               >
                 <option>Select container type</option>
-                {vendorProfile?.containerReceived?.map(container => (
-                  <option
-                    key={container._id}
-                    value={container.containerSchema.category}
-                  >
-                    {container.containerSchema.category}
+                {selectedCustomer?.container.map(con => (
+                  <option key={con._id} value={con.containerInfo.category}>
+                    {con.containerInfo.category}
                   </option>
                 ))}
               </Form.Control>
@@ -237,6 +324,21 @@ const Vendor = () => {
                 value={returnQuantity}
                 onChange={e => setReturnQuantity(e.target.value)}
               />
+            </Form.Group>
+            <Form.Group controlId="returnLocation">
+              <Form.Label>Return Location:</Form.Label>
+              <Form.Control
+                as="select"
+                value={returnLocation}
+                onChange={e => setReturnLocation(e.target.value)}
+              >
+                <option>Select location</option>
+                {vendorProfile?.location?.map(loc => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -314,20 +416,20 @@ const Vendor = () => {
                   <td>
                     <Button
                       variant="info"
-                      onClick={() => handleSeeContainers(user.phone)}
+                      onClick={() => handleSeeContainers(user)}
                     >
                       Container Information
                     </Button>
                     <Button
                       variant="success"
-                      onClick={() => handleShowAssignModal(user.phone)}
+                      onClick={() => handleShowAssignModal(user)}
                       className="mx-3"
                     >
                       Checkout
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleShowRemoveModal(user.phone)}
+                      onClick={() => handleShowRemoveModal(user)}
                     >
                       Return
                     </Button>

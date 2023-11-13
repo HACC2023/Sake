@@ -42,9 +42,9 @@ const logoutVendor = asyncHandler(async (req, res) => {
 // route GET /api/users/vendor/list-users
 // @access Private
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({ containerVendor: req.vendor._id }).select(
-    "-password"
-  ).populate({path:"container.containerInfo"});
+  const users = await User.find({ containerVendor: req.vendor._id })
+    .select("-password")
+    .populate({ path: "container.containerInfo" });
   res.status(200).json(users);
 });
 
@@ -98,7 +98,6 @@ const checkoutUser = asyncHandler(async (req, res) => {
   })
     .select("-password")
     .populate({ path: "container.containerInfo" });
-  console.log(vendor.containerReceived);
   if (user && vendor) {
     const containerAvailability = vendor.containerReceived.find(
       container => container.containerSchema.category === containerName
@@ -106,6 +105,12 @@ const checkoutUser = asyncHandler(async (req, res) => {
     if (!containerAvailability) {
       return res.status(404).json({ message: "Container not available" });
     }
+    if (containerAvailability.quantity >= +quantity) {
+      containerAvailability.quantity -= +quantity;
+    } else {
+      return res.status(404).json({ message: "Stock not enough" });
+    }
+
     const containerToUpdate = user.container.find(
       container => container.containerInfo.category === containerName
     );
@@ -118,11 +123,7 @@ const checkoutUser = asyncHandler(async (req, res) => {
         returnQuan: 0,
       });
     }
-    if (containerAvailability >= quantity) {
-      containerAvailability.quantity -= +quantity;
-    } else {
-      return res.status(404).json({ message: "Low stock or not available" });
-    }
+
     const updatedVendor = await vendor.save();
     const updatedUser = await user.save();
     res.status(200).json({ vendor: updatedVendor, user: updatedUser });
@@ -151,7 +152,7 @@ const returnUser = asyncHandler(async (req, res) => {
         message: "Container not found",
       });
     }
-    if (containerToUpdate.quantity < quantity) {
+    if (containerToUpdate.checkoutQuan < +quantity) {
       return res
         .status(400)
         .json({ message: "Quantity to remove exceeds the available quantity" });
@@ -176,13 +177,16 @@ const updateLocation = asyncHandler(async (req, res) => {
   if (!vendor) {
     return res.status(404).json({ message: "Vendor not found" });
   }
+  if (vendor.location.includes(returnLocation)) {
+    return res.status(404).json({ message: "Location already exists" });
+  }
   vendor.location.push(returnLocation);
   const updatedVendor = await vendor.save();
   res.status(200).json(updatedVendor);
 });
 
 // @desc get all vendors
-// route POST /api/users/list-vendors
+// route GET /api/users/list-vendors
 // @access Public
 const getVendors = asyncHandler(async (req, res) => {
   const vendors = await Vendor.find().select("name");
