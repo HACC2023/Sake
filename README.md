@@ -17,3 +17,12 @@ npm i
 ```bash
 npm run dev
 ```
+**In order for it to work, you need to create a .env file, please text 8087997796 for the file content**
+
+***For Demoing Purposes***
+
+Admin credential:
+
+Vendor credential:
+
+User credential:
