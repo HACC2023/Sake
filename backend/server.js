@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
@@ -20,7 +21,15 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes, vendorRoutes, adminRoutes);
 
-app.get("/", (req, res) => res.send("Server is ready"));
+if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
+  app.use(express.static(path.join(__dirname, "frontend/dist")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
+  );
+} else {
+  app.get("/", (req, res) => res.send("Server is ready"));
+}
 
 // return a json object with error message and stack if in dev environment
 // instead of an HTML error page
