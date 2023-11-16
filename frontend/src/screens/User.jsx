@@ -1,24 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
+import { useUserProfileQuery } from "../slices/adminApiSlice";
 
 const User = () => {
-  const [containersOwned, setContainersOwned] = useState(3);
-  const [currentBalance, setCurrentBalance] = useState(50);
-  const [currentReturned, setCurrentReturned] = useState(10);
-  const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
+  const [currentBalance, setCurrentBalance] = useState(0);
   const [showPayBalanceModal, setShowPayBalanceModal] = useState(false);
-  const [userContainers, setUserContainers] = useState([
-    { type: "small", quantity: 2 },
-    { type: "medium", quantity: 1 },
-  ]);
-
-  const handleGenerateCode = () => {
-    const randomCode = Math.random().toString(36).substr(2, 5);
-    alert(`Generated Code: ${randomCode}`);
-  };
-
-  const handleShowGenerateCodeModal = () => setShowGenerateCodeModal(true);
-  const handleCloseGenerateCodeModal = () => setShowGenerateCodeModal(false);
 
   const handleShowPayBalanceModal = () => setShowPayBalanceModal(true);
   const handleClosePayBalanceModal = () => setShowPayBalanceModal(false);
@@ -29,31 +15,80 @@ const User = () => {
     handleClosePayBalanceModal();
   };
 
+  const {
+    data: userProfile,
+    isLoading: userProfileLoading,
+    isError: userProfileError,
+    refetch: userProfileRefetch,
+  } = useUserProfileQuery();
+
+  useEffect(() => {
+    const pollInterval = setInterval(async () => {
+      await userProfileRefetch();
+    }, 5000);
+    return () => {
+      clearInterval(pollInterval);
+    };
+  }, [userProfileRefetch]);
+
+  useEffect(() => {
+    setCurrentBalance(
+      userProfile?.container.reduce(
+        (accu, currIndex) =>
+          accu +
+          (currIndex.checkoutQuan - currIndex.returnQuan) *
+            currIndex.containerInfo.cost,
+        0
+      )
+    );
+  }, [userProfile]);
+
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div style={{ textAlign: "center", margin: "50px 50px 0" }}>
       <h1>User Portal</h1>
-      <p>Containers Owned: {containersOwned}</p>
-      <p>Current Balance: ${currentBalance}</p>
-      <p>Total Containers Returned: ${currentReturned}</p>
-      <p>Containers Owned:</p>
-      <Table striped bordered hover>
+      <p className="fs-5 mb-0">Vendor: {userProfile?.containerVendor?.name}</p>
+      <p className="fs-5 mb-0">Vendor phone: {userProfile?.containerVendor?.phone}</p>
+      <Table striped bordered hover className="w-75 mx-auto my-4">
         <thead>
           <tr>
             <th>Container Type</th>
-            <th>Quantity</th>
+            <th>Checked Out</th>
+            <th>Returned</th>
+            <th>Cost</th>
           </tr>
         </thead>
         <tbody>
-          {userContainers.map((container, index) => (
+          {userProfile?.container.map((container, index) => (
             <tr key={index}>
-              <td>{container.type}</td>
-              <td>{container.quantity}</td>
+              <td>{container.containerInfo.category}</td>
+              <td>{container.checkoutQuan}</td>
+              <td>{container.returnQuan}</td>
+              <td>
+                ${" "}
+                {(container.checkoutQuan - container.returnQuan) *
+                  container.containerInfo.cost}
+              </td>
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={3}>Balance</td>
+            <td>
+              ${" "}
+              {userProfile?.container.reduce(
+                (accu, currIndex) =>
+                  accu +
+                  (currIndex.checkoutQuan - currIndex.returnQuan) *
+                    currIndex.containerInfo.cost,
+                0
+              )}
+            </td>
+          </tr>
+        </tfoot>
       </Table>
-    
-      <button onClick={handleShowPayBalanceModal}>Pay Balance</button>
+
+      <Button onClick={handleShowPayBalanceModal}>Pay Balance</Button>
 
       {/* pay dues */}
       <Modal show={showPayBalanceModal} onHide={handleClosePayBalanceModal}>

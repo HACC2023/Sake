@@ -80,7 +80,10 @@ const logoutUser = asyncHandler(async (req, res) => {
 // route GET /api/users/user/profile
 // @access Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findOne({ _id: req.user._id }).select("-password");
+  const user = await User.findOne({ _id: req.user._id })
+    .select("-password")
+    .populate("container.containerInfo")
+    .populate("containerVendor", "name email phone");
   if (user) {
     res.status(200).json(user);
   } else {

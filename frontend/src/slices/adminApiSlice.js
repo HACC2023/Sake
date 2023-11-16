@@ -141,12 +141,12 @@ export const adminApiSlice = apiSlice.injectEndpoints({
     }),
     userProfile: builder.query({
       query: () => ({
-        url: `${BASE_URL}/users/user/profile`,
+        url: `${BASE_URL}/user/profile`,
       }),
     }),
     userAddPayment: builder.mutation({
       query: data => ({
-        url: `${BASE_URL}/users/user/profile/payment`,
+        url: `${BASE_URL}/user/profile/payment`,
         method: "POST",
         body: data,
       }),

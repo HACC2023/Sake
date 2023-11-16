@@ -413,7 +413,7 @@ const Vendor = () => {
                 <tr key={user._id} className="align-middle">
                   <td>{user.name}</td>
                   <td>{user.phone}</td>
-                  <td>
+                  <td className="d-flex justify-content-center">
                     <Button
                       variant="info"
                       onClick={() => handleSeeContainers(user)}

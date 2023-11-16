@@ -443,7 +443,7 @@ const Admin = () => {
                 <th>Vendor Name</th>
                 <th>Phone Number</th>
                 <th>Email</th>
-                <th>Containers Received</th>
+                <th style={{ minWidth: "255px" }}>Containers Received</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -453,7 +453,7 @@ const Admin = () => {
                   <td>{vendor.name}</td>
                   <td>{vendor.phone}</td>
                   <td>{vendor.email}</td>
-                  <td>
+                  <td style={{ minWidth: "255px" }}>
                     {vendor.containerReceived?.map(container => (
                       <div
                         key={container._id}
