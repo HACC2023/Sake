@@ -23,6 +23,7 @@ import {
 } from "../slices/adminApiSlice";
 import { logout } from "../slices/authSlice";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import "./Header.css";
 
@@ -54,6 +55,7 @@ const Header = () => {
       if (userInfo.role === "user") await userLogout().unwrap();
       dispatch(logout());
       navigate("/");
+      toast.success("Signed Out Successfully.");
     } catch (err) {
       console.log(err);
     }

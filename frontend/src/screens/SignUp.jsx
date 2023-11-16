@@ -50,8 +50,6 @@ const SignUp = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
-  console.log(vendor);
-  if (isError) toast.error("Error loading vendors, please refresh.");
 
   return (
     <FormContainer>
