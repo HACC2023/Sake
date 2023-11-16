@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Table, Form } from "react-bootstrap";
 
 const User = () => {
   const [containersOwned, setContainersOwned] = useState(3);
@@ -7,9 +7,13 @@ const User = () => {
   const [currentReturned, setCurrentReturned] = useState(10);
   const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
   const [showPayBalanceModal, setShowPayBalanceModal] = useState(false);
+  const [userContainers, setUserContainers] = useState([
+    { type: "small", quantity: 2 },
+    { type: "medium", quantity: 1 },
+  ]);
 
   const handleGenerateCode = () => {
-    const randomCode = Math.random().toString(36).substr(2, 5); // Generates a random 5-character code
+    const randomCode = Math.random().toString(36).substr(2, 5);
     alert(`Generated Code: ${randomCode}`);
   };
 
@@ -19,39 +23,37 @@ const User = () => {
   const handleShowPayBalanceModal = () => setShowPayBalanceModal(true);
   const handleClosePayBalanceModal = () => setShowPayBalanceModal(false);
 
+  const handlePayNow = () => {
+    // Handle payment logic here
+    alert("Payment successful!");
+    handleClosePayBalanceModal();
+  };
+
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <h1>User Portal</h1>
       <p>Containers Owned: {containersOwned}</p>
       <p>Current Balance: ${currentBalance}</p>
       <p>Total Containers Returned: ${currentReturned}</p>
-      <button
-        style={{ marginRight: "10px" }}
-        onClick={handleShowGenerateCodeModal}
-      >
-        Generate Code
-      </button>
+      <p>Containers Owned:</p>
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Container Type</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {userContainers.map((container, index) => (
+            <tr key={index}>
+              <td>{container.type}</td>
+              <td>{container.quantity}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    
       <button onClick={handleShowPayBalanceModal}>Pay Balance</button>
-
-      {/* checkout button */}
-      <Modal show={showGenerateCodeModal} onHide={handleCloseGenerateCodeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Checkout Container</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            Generated Code:{" "}
-            <strong>{Math.random().toString(36).substr(2, 5)}</strong>
-          </p>{" "}
-          {/* eventually this will be a variable tha the vendor can interact with */}
-          <p>Please don't close this window until you are done checking out.</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseGenerateCodeModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       {/* pay dues */}
       <Modal show={showPayBalanceModal} onHide={handleClosePayBalanceModal}>
@@ -60,12 +62,28 @@ const User = () => {
         </Modal.Header>
         <Modal.Body>
           <p>Current Balance: ${currentBalance}</p>
+          <Form>
+            <Form.Group controlId="cardNumber">
+              <Form.Label>Credit Card Number:</Form.Label>
+              <Form.Control type="text" placeholder="Enter card number" />
+            </Form.Group>
+            <Form.Group controlId="expirationDate">
+              <Form.Label>Expiration Date:</Form.Label>
+              <Form.Control type="text" placeholder="MM/YY" />
+            </Form.Group>
+            <Form.Group controlId="cvv">
+              <Form.Label>CVV:</Form.Label>
+              <Form.Control type="text" placeholder="Enter CVV" />
+            </Form.Group>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClosePayBalanceModal}>
             Close
           </Button>
-          <Button variant="primary">Pay Now</Button>
+          <Button variant="primary" onClick={handlePayNow}>
+            Pay Now
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
