@@ -82,14 +82,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findOne({ _id: req.user._id })
     .select("-password")
-    .populate("container.containerInfo")
-    .populate("containerVendor")
-    .exec();
-  if (user) {
-    res.status(200).json(user);
-  } else {
-    res.status(404).json({ message: "User Not Found" });
-  }
+    .populate({ path: "container.containerInfo" })
+    .populate({ path: "containerVendor", select: "name phone location" });
+  res.status(200).json(user);
 });
 
 // @desc Update user payment
