@@ -83,7 +83,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findOne({ _id: req.user._id })
     .select("-password")
     .populate({ path: "container.containerInfo" })
-    .populate({ path: "containerVendor", select: "name phone location" });
+    .populate({ path: "containerVendor" });
   res.status(200).json(user);
 });
 
