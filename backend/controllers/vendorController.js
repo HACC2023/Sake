@@ -152,7 +152,10 @@ const returnUser = asyncHandler(async (req, res) => {
         message: "Container not found",
       });
     }
-    if (containerToUpdate.checkoutQuan < +quantity) {
+    if (
+      containerToUpdate.checkoutQuan - containerToUpdate.returnQuan <
+      +quantity
+    ) {
       return res
         .status(400)
         .json({ message: "Quantity to remove exceeds the available quantity" });

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Table, Form } from "react-bootstrap";
 import { useUserProfileQuery } from "../slices/adminApiSlice";
+import Loader from "../components/Loader";
 
 const User = () => {
   const [currentBalance, setCurrentBalance] = useState(0);
@@ -46,49 +47,68 @@ const User = () => {
   return (
     <div style={{ textAlign: "center", margin: "50px 50px 0" }}>
       <h1>User Portal</h1>
-      <p className="fs-5 mb-0">Vendor: {userProfile?.containerVendor?.name}</p>
-      <p className="fs-5 mb-0">Vendor phone: {userProfile?.containerVendor?.phone}</p>
-      <Table striped bordered hover className="w-75 mx-auto my-4">
-        <thead>
-          <tr>
-            <th>Container Type</th>
-            <th>Checked Out</th>
-            <th>Returned</th>
-            <th>Cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          {userProfile?.container.map((container, index) => (
-            <tr key={index}>
-              <td>{container.containerInfo.category}</td>
-              <td>{container.checkoutQuan}</td>
-              <td>{container.returnQuan}</td>
-              <td>
-                ${" "}
-                {(container.checkoutQuan - container.returnQuan) *
-                  container.containerInfo.cost}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colSpan={3}>Balance</td>
-            <td>
-              ${" "}
-              {userProfile?.container.reduce(
-                (accu, currIndex) =>
-                  accu +
-                  (currIndex.checkoutQuan - currIndex.returnQuan) *
-                    currIndex.containerInfo.cost,
-                0
-              )}
-            </td>
-          </tr>
-        </tfoot>
-      </Table>
-
-      <Button onClick={handleShowPayBalanceModal}>Pay Balance</Button>
+      {userProfileLoading ? (
+        <div>
+          <Loader />
+          <p>Loading vendor info</p>
+        </div>
+      ) : (
+        <div>
+          <p className="fs-5 mb-0">
+            Vendor: {userProfile?.containerVendor?.name}
+          </p>
+          <p className="fs-5 mb-0">
+            Vendor phone: {userProfile?.containerVendor?.phone}
+          </p>
+        </div>
+      )}
+      {userProfileLoading ? (
+        <Loader />
+      ) : (
+        <div>
+          {" "}
+          <Table striped bordered hover className="w-75 mx-auto my-4">
+            <thead>
+              <tr>
+                <th>Container Type</th>
+                <th>Checked Out</th>
+                <th>Returned</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userProfile?.container.map((container, index) => (
+                <tr key={index}>
+                  <td>{container.containerInfo.category}</td>
+                  <td>{container.checkoutQuan}</td>
+                  <td>{container.returnQuan}</td>
+                  <td>
+                    ${" "}
+                    {(container.checkoutQuan - container.returnQuan) *
+                      container.containerInfo.cost}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colSpan={3}>Balance</td>
+                <td>
+                  ${" "}
+                  {userProfile?.container.reduce(
+                    (accu, currIndex) =>
+                      accu +
+                      (currIndex.checkoutQuan - currIndex.returnQuan) *
+                        currIndex.containerInfo.cost,
+                    0
+                  )}
+                </td>
+              </tr>
+            </tfoot>
+          </Table>
+          <Button onClick={handleShowPayBalanceModal}>Pay Balance</Button>
+        </div>
+      )}
 
       {/* pay dues */}
       <Modal show={showPayBalanceModal} onHide={handleClosePayBalanceModal}>
