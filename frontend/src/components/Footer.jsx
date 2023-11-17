@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <footer className="bg-dark text-center text-white">
+    <footer className="bg-dark text-center text-white h-auto">
       <div className="container p-4">
         <img
           src="https://images.squarespace-cdn.com/content/v1/607912e0b05e0b4b67ab64d8/fc34a218-d058-4223-8932-50b0d5eaa65f/Clear+Logo+Rectangle+1+%281%29.png"
@@ -20,11 +20,10 @@ const Footer = () => {
             newsletter for the most up to date information.
           </p>
         </section>
-        <section className="">
+        <section>
           <div className="row">
             <div className="col-lg-3 col-md-6 mb-4 mb-md-0">
               <h5 className="text-uppercase">About Us</h5>
-
               <ul className="list-unstyled mb-0">
                 <li>
                   <a
