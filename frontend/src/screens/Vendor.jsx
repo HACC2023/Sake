@@ -416,6 +416,7 @@ const Vendor = () => {
                   <td className="d-flex justify-content-center">
                     <Button
                       variant="info"
+                      className="mx-3"
                       onClick={() => handleSeeContainers(user)}
                     >
                       Container Information
@@ -429,9 +430,17 @@ const Vendor = () => {
                     </Button>
                     <Button
                       variant="danger"
+                      className="mx-3"
                       onClick={() => handleShowRemoveModal(user)}
                     >
                       Return
+                    </Button>
+                    <Button
+                      variant="dark"
+                      className="mx-3"
+                      onClick={() => alert("SMS Coupon Sent Succesfully")}
+                    >
+                      Send Coupon
                     </Button>
                   </td>
                 </tr>

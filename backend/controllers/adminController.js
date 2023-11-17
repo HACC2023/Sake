@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import Admin from "../models/adminModel.js";
 import Vendor from "../models/vendorModel.js";
+import User from "../models/userModel.js";
 import Container from "../models/containerSchema.js";
 import generateToken from "../utils/generateToken.js";
 
@@ -219,6 +220,17 @@ const removeVendorProfile = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc get users
+// route GET /api/users/admin/users
+// @access Private
+const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await User.find()
+    .select("-password")
+    .populate({ path: "containerVendor", select: "name" })
+    .populate({ path: "container.containerInfo" });
+  res.status(200).json(users);
+});
+
 export {
   authAdmin,
   registerAdmin,
@@ -230,4 +242,5 @@ export {
   removeVendor,
   getContainers,
   removeVendorProfile,
+  getAllUsers,
 };

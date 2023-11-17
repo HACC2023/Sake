@@ -35,6 +35,11 @@ export const adminApiSlice = apiSlice.injectEndpoints({
         url: `${BASE_URL}/admin/vendors`,
       }),
     }),
+    adminGetUsers: builder.query({
+      query: () => ({
+        url: `${BASE_URL}/admin/users`,
+      }),
+    }),
     adminGetContainers: builder.query({
       query: () => ({
         url: `${BASE_URL}/containers`,
@@ -179,4 +184,5 @@ export const {
   useUserProfileQuery,
   useUserAddPaymentMutation,
   useAdminRemoveVendorMutation,
+  useAdminGetUsersQuery,
 } = adminApiSlice;

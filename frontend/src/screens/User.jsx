@@ -60,6 +60,10 @@ const User = () => {
           <p className="fs-5 mb-0">
             Vendor phone: {userProfile?.containerVendor?.phone}
           </p>
+          <p className="fs-5 mb-0">Return location: </p>
+          {userProfile?.containerVendor?.location?.map(loc => (
+            <div>{loc}</div>
+          ))}
         </div>
       )}
       {userProfileLoading ? (
