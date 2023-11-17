@@ -82,8 +82,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findOne({ _id: req.user._id })
     .select("-password")
-    .populate({ path: "container.containerInfo" })
-    .populate({ path: "containerVendor", select: "name email phone" });
+    .populate("container.containerInfo containerVendor");
   if (user) {
     res.status(200).json(user);
   } else {
