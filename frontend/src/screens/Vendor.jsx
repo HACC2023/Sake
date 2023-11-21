@@ -402,9 +402,10 @@ const Vendor = () => {
         ) : (
           <Table striped bordered hover responsive="md">
             <thead>
-              <tr>
+              <tr className="align-middle">
                 <th>Customer Name</th>
                 <th>Phone Number</th>
+                <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -413,6 +414,33 @@ const Vendor = () => {
                 <tr key={user._id} className="align-middle">
                   <td>{user.name}</td>
                   <td>{user.phone}</td>
+
+                  {user.container.length !== 0 &&
+                    user.container.reduce(
+                      (accu, curr) => accu + curr.checkoutQuan,
+                      0
+                    ) ===
+                      user.container.reduce(
+                        (accu, curr) => accu + curr.returnQuan,
+                        0
+                      ) && (
+                      <td style={{ backgroundColor: "#CAFE48" }}>complete</td>
+                    )}
+                  {user.container.length !== 0 &&
+                    user.container.reduce(
+                      (accu, curr) => accu + curr.checkoutQuan,
+                      0
+                    ) !==
+                      user.container.reduce(
+                        (accu, curr) => accu + curr.returnQuan,
+                        0
+                      ) && (
+                      <td style={{ backgroundColor: "#F79F66" }}>incomplete</td>
+                    )}
+                  {user.container.length === 0 && (
+                    <td style={{ backgroundColor: "#70F8BA" }}>new</td>
+                  )}
+
                   <td className="d-flex justify-content-center">
                     <Button
                       variant="info"

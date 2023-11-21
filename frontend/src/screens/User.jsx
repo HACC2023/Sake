@@ -110,7 +110,12 @@ const User = () => {
               </tr>
             </tfoot>
           </Table>
-          <Button onClick={handleShowPayBalanceModal}>Pay Balance</Button>
+          <Button
+            onClick={handleShowPayBalanceModal}
+            disabled={currentBalance ? "false" : "true"}
+          >
+            Pay Balance
+          </Button>
         </div>
       )}
 
