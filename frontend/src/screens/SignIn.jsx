@@ -139,6 +139,13 @@ const SignIn = () => {
             </Col>
           </Row>
         )}
+        {role === "vendor" && (
+          <Row className="py-3 text-center">
+            <Col>
+              New {role}? <span className="text-danger">Please contact admin</span>
+            </Col>
+          </Row>
+        )}
       </Form>
     </FormContainer>
   );

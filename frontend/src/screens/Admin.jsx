@@ -196,9 +196,11 @@ const Admin = () => {
 
   const filteredUsers = users?.filter(
     user =>
-      user.name.includes(searchQueryUser.toUpperCase()) ||
+      user.name.toUpperCase().includes(searchQueryUser.toUpperCase()) ||
       user.phone.includes(searchQueryUser) ||
-      user.containerVendor?.name.includes(searchQueryUser.toUpperCase())
+      user.containerVendor?.name
+        .toUpperCase()
+        .includes(searchQueryUser.toUpperCase())
   );
 
   return (
